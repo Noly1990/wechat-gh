@@ -1,10 +1,9 @@
 //appid:  wxc6f411ed9dc04773
 //wxc6f411ed9dc04773
-
+//这是全局api调用的access_token
 // "access_token": "8_Iy7OEs_oJMbdtQDyTyxzpNDSGMtZGurksKaOnmjvuBjLQCp9r-D1z2ISlL9oKLa3oeLBrZQun4t5tNqui8Yw_ApjNN9bYg1uT_puNSZ0d7N3sQmvw94TQHWRwGq-yJo-EJCtAMgzQ9x6PIrlIOFgADAWCT", 
 // "expires_in": 7200
 const axios=require('axios');
-
 
 async function checkAndGetToken(oldToken,){
     let apiDefault='api.weixin.qq.com';
