@@ -1,0 +1,71 @@
+
+这是发了一个1，文本消息
+xml { xml:
+   { ToUserName: [ 'gh_b2778b857448' ],
+     FromUserName: [ 'oWbV21cjRc8jKG_LcEdw8u490iWM' ],
+     CreateTime: [ '1523258781' ],
+     MsgType: [ 'text' ],
+     Content: [ '1' ],
+     MsgId: [ '6542346648163874691' ] } }
+
+
+这是取消关注
+xml { xml:
+   { ToUserName: [ 'gh_b2778b857448' ],
+     FromUserName: [ 'oWbV21cjRc8jKG_LcEdw8u490iWM' ],
+     CreateTime: [ '1523258924' ],
+     MsgType: [ 'event' ],
+     Event: [ 'unsubscribe' ],
+     EventKey: [ '' ] } }
+
+这是关注
+xml { xml:
+   { ToUserName: [ 'gh_b2778b857448' ],
+     FromUserName: [ 'oWbV21cjRc8jKG_LcEdw8u490iWM' ],
+     CreateTime: [ '1523258956' ],
+     MsgType: [ 'event' ],
+     Event: [ 'subscribe' ],
+     EventKey: [ '' ] } }
+
+这是发送图片
+xml { xml:
+   { ToUserName: [ 'gh_b2778b857448' ],
+     FromUserName: [ 'oWbV21cjRc8jKG_LcEdw8u490iWM' ],
+     CreateTime: [ '1523259008' ],
+     MsgType: [ 'image' ],
+     PicUrl:
+      [ 'http://mmbiz.qpic.cn/mmbiz_jpg/8uiaGrkQzazer1nMlw5VF0jEEk5LxrUciaIib3Ve
+rtQXfVA0icX48Y21XWJP0JCZ05fN69OgQFL2N7CBbvQu8v7z8Q/0' ],
+     MsgId: [ '6542347623121450938' ],
+     MediaId:
+      [ 'sEtPVoyZlooRooMznSuzM-kByBwxNcCDfSSJ7Bmdk2pp-CiwxwqSFgDN1Qbb4Aw2' ] } }
+
+这是发送地址
+xml { xml:
+   { ToUserName: [ 'gh_b2778b857448' ],
+     FromUserName: [ 'oWbV21cjRc8jKG_LcEdw8u490iWM' ],
+     CreateTime: [ '1523259097' ],
+     MsgType: [ 'location' ],
+     Location_X: [ '29.209316' ],
+     Location_Y: [ '119.437836' ],
+     Scale: [ '16' ],
+     Label: [ '兰溪市总部大楼(金华市总部大楼振兴路南)' ],
+     MsgId: [ '6542348005373540299' ] } }
+
+
+这是发送文件
+xml { xml:
+   { ToUserName: [ 'gh_b2778b857448' ],
+     FromUserName: [ 'oWbV21cjRc8jKG_LcEdw8u490iWM' ],
+     CreateTime: [ '1523259120' ],
+     MsgType: [ 'file' ],
+     Title: [ '经文大全.docx' ],
+     Description: [ '12.6 KB' ],
+     FileKey: [ 'AQAAAAAAAACALZwC' ],
+     FileMd5: [ '3fd50ad28dac996d464426f50325f606' ],
+     FileTotalLen: [ '12937' ],
+     MsgId: [ '6542348104157788110' ] } }
+{ signature: 'd1e9dd81b2ada7bbd4c668811a08517271cf2868',
+  timestamp: '1523259120',
+  nonce: '518567754',
+  openid: 'oWbV21cjRc8jKG_LcEdw8u490iWM' }
