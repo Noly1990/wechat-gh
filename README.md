@@ -8,7 +8,10 @@
 - [接入指南](https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421135319)
 
 #### 第二步：简单的信息回复
+- 公众号的消息接收和回复，关键点是query中的signature的验证，以及xml的解析（使用xml2js做response的解析，request的xml解析使用的是koa-xml-body，目前看来效果可以），首次配置服务器的地址时，微信服务器会GET在服务器的根目录下'/'的，其他的消息都是POST在服务器的根目录'/'下的，都会携带signature信息
 
 #### 第三步：微信内网页开发
 - 在微信页面授权的时候，redirect_uri	授权后重定向的回调链接地址， 请使用 urlEncode 对链接进行处理
-- 微信的jssdk的验证，中签名
+- 微信的jssdk的验证中签名的难点是在wx.config的签名信息的计算上，可以用网上现成的，也可以自己写，我自己是找了一个网上的sign.js做签名的计算，其他部分自己实现了
+
+#### 整个业务逻辑的整理
