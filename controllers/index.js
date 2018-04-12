@@ -1,8 +1,8 @@
 
 const xml2js = require('xml2js');
-const { answerText } = require('../utils/answer')
+const { answerText,answerEvent } = require('../utils/answer')
 const { exchangeAuthToken, getUserInfo } = require('../utils/userAuthToken')
-const { signatureSdk }=require('../utils/getTokenOrTicket')
+const { signatureSdk } = require('../utils/getTokenOrTicket')
 
 async function pureGet(ctx, next) {
     const { echostr } = ctx.query;
@@ -15,25 +15,28 @@ async function purePost(ctx, next) {
     let xml = ctx.request.body.xml;
     const { MsgType } = xml;
 
-    let jsonBuilder = new xml2js.Builder();
-
-    console.log(MsgType)
+    console.log('MsgType',MsgType)
     switch (MsgType) {
         case 'text':
-            let jsonObj = answerText(xml);
-            let aimXML = jsonBuilder.buildObject({
-                xml: jsonObj
+            let jsonText = answerText(xml);
+            let textBuilder = new xml2js.Builder();
+            let aimXML = textBuilder.buildObject({
+                xml: jsonText
             })
             ctx.body = aimXML;
             break;
         case 'event':
-            const { Event } = xml;
-            ctx.body = {
-                code: 1,
-                message: 'this is event message',
-                Event,
-                count
+            let jsonEvent = answerEvent(xml);
+            let eventXML;
+            if (jsonEvent) {
+                let eventBuilder = new xml2js.Builder();
+                eventXML = eventBuilder.buildObject({
+                    xml: jsonEvent
+                })
+            }else {
+                eventXML= jsonEvent;
             }
+            ctx.body = eventXML;
             break;
         case 'location':
             const { Location_X, Location_Y } = xml;
@@ -56,22 +59,22 @@ async function purePost(ctx, next) {
 
 async function postCode(ctx, next) {
     let json = ctx.request.body;
-    let tokenRes =await exchangeAuthToken(json.code);
+    let tokenRes = await exchangeAuthToken(json.code);
     let openid = tokenRes.openid;
-    let token=tokenRes.access_token;
-    let infoRes=await getUserInfo(token,openid);
+    let token = tokenRes.access_token;
+    let infoRes = await getUserInfo(token, openid);
 
     ctx.body = {
         infoRes
     }
 }
 
-async function getSig(ctx,next){
-    let { url }=ctx.request.body;
-    console.log('sig-url',url)
-    let sigInfo=await signatureSdk(url);
-    console.log('sigInfo',sigInfo)
-    ctx.body=sigInfo;
+async function getSig(ctx, next) {
+    let { url } = ctx.request.body;
+    console.log('sig-url', url)
+    let sigInfo = await signatureSdk(url);
+    console.log('sigInfo', sigInfo)
+    ctx.body = sigInfo;
 
 }
 

@@ -7,7 +7,6 @@ function checkWX(signature, timestamp, nonce) {
     let sha1 = crypto.createHash('sha1');
     sha1.update(str, 'utf-8');
     let newStr = sha1.digest('hex');
-    console.log('newStr', newStr)
     if (newStr === signature) return true;
     else return false;
 }
