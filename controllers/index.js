@@ -19,11 +19,17 @@ async function purePost(ctx, next) {
     switch (MsgType) {
         case 'text':
             let jsonText = answerText(xml);
-            let textBuilder = new xml2js.Builder();
-            let aimXML = textBuilder.buildObject({
-                xml: jsonText
-            })
+            let aimXML;
+            if (jsonText) {
+                let textBuilder = new xml2js.Builder();
+                aimXML = textBuilder.buildObject({
+                    xml: jsonText
+                })
+            }else {
+                aimXML= jsonText;
+            }
             ctx.body = aimXML;
+            break;
             break;
         case 'event':
             let jsonEvent = answerEvent(xml);

@@ -1,3 +1,5 @@
+//微信服务器推送消息的验证
+
 const crypto = require('crypto');
 
 const { token } = require('../base.config')
