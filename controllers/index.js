@@ -69,7 +69,7 @@ async function postCode(ctx, next) {
     let openid = tokenRes.openid;
     let token = tokenRes.access_token;
     let infoRes = await getUserInfo(token, openid);
-
+    console.log('infoRes',infoRes);
     ctx.body = {
         infoRes
     }

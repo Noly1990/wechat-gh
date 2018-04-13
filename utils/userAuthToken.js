@@ -1,6 +1,6 @@
 const axios = require('axios')
 
-const { appid, appsecret } = require('../base.config')
+const { appid, appsecret } = require('../danger.config')
 
 
 async function exchangeAuthToken(code) {

@@ -5,7 +5,7 @@ const checkSig = require('../middlewares/checkSig')
 
 const indexControl=require('../controllers/index')
 
-
+const {appid}=require('../danger.config')
 
 let access_token = '';
 let expiration = new Date();
@@ -24,9 +24,12 @@ router.get('/index', async (ctx, next) => {
   })
 })
 
+
+
 router.get('/testpage', async (ctx, next) => {
   await ctx.render('testpage', {
-    title: "this is testpage"
+    title: "this is testpage",
+    appid
   })
 })
 

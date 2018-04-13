@@ -2,7 +2,7 @@
 
 const crypto = require('crypto');
 
-const { token } = require('../base.config')
+const { token } = require('../danger.config')
 
 function checkWX(signature, timestamp, nonce) {
     var str = [token, timestamp, nonce].sort().join('');

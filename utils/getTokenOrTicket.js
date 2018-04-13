@@ -6,7 +6,7 @@
 const axios=require('axios');
 let apiDefault='api.weixin.qq.com';
 let apiShangHai='sh.api.weixin.qq.com';
-const {appid,appsecret}=require('../base.config');
+const {appid,appsecret}=require('../danger.config');
 const sign=require('./sign')
 
 let jsapi_ticket='';
