@@ -17,8 +17,13 @@ const Order=sequelize.define('user',{
     unionid:{
         type: Sequelize.STRING
     },
+    //游戏中id
+    gameid:{
+        type: Sequelize.STRING
+    },
     money:{
         type: Sequelize.INTEGER
     }
 });
+
 module.exports=User

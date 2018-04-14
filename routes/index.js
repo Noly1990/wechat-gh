@@ -38,11 +38,16 @@ router.get('/index', async (ctx, next) => {
 
 router.get('/outhpage', async (ctx, next) => {
   await ctx.render('outhpage', {
-    title: "授权页面",
-    appid
+    title: "授权页面"
   })
 })
 
+
+router.all('/outhpage', ctx => {
+  let aimpage=ctx.query.aimpage;
+  ctx.redirect(`https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appid}&redirect_uri=${aimpage}&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect`);
+  ctx.status = 302;
+});
 
 router.get('/pay', async (ctx, next) => {
   await ctx.render('pay', {
