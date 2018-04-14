@@ -1,8 +1,10 @@
-//appid:  wxc6f411ed9dc04773
-//wxc6f411ed9dc04773
+
 //这是全局api调用的access_token
-// "access_token": "8_Iy7OEs_oJMbdtQDyTyxzpNDSGMtZGurksKaOnmjvuBjLQCp9r-D1z2ISlL9oKLa3oeLBrZQun4t5tNqui8Yw_ApjNN9bYg1uT_puNSZ0d7N3sQmvw94TQHWRwGq-yJo-EJCtAMgzQ9x6PIrlIOFgADAWCT", 
-// "expires_in": 7200
+
+//以及获取jssdk_ticket的方法
+
+
+
 const axios=require('axios');
 let apiDefault='api.weixin.qq.com';
 let apiShangHai='sh.api.weixin.qq.com';
@@ -11,9 +13,10 @@ const sign=require('./sign')
 
 let jsapi_ticket='';
 let access_token='';
-
+let last_ticket_time,last_token_time;
 async function checkAndGetToken(){
-    if (access_token) {
+    let nowTime=new Date().getTime()/1000;
+    if (access_token&&(last_token_time+7000>nowTime)) {
         return access_token;
     }else {
         let aimUrl=`https://${apiShangHai}/cgi-bin/token?grant_type=client_credential&appid=${appid}&secret=${appsecret}`;
@@ -26,6 +29,7 @@ async function checkAndGetToken(){
             })
         })
         access_token=tokenRes.data.access_token;
+        last_token_time=new Date().getTime()/1000;
         return access_token;
     }
     
@@ -34,7 +38,8 @@ async function checkAndGetToken(){
 }
 
 async function checkAndGetTicket(token) {
-    if (jsapi_ticket) {
+    let nowTime=new Date().getTime()/1000;
+    if (jsapi_ticket&&(last_ticket_time+7000>nowTime)) {
         return jsapi_ticket;
     }else {
         let aimUrl=`https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=${token}&type=jsapi`
@@ -47,20 +52,20 @@ async function checkAndGetTicket(token) {
             })
         })
         jsapi_ticket=ticketRes.data.ticket;
+        last_ticket_time=new Date().getTime()/1000;
         return jsapi_ticket;
     }
 }
 
+//签名url的wx.config
 async function signatureSdk(url){
     let token=await checkAndGetToken();
     let ticket=await checkAndGetTicket(token);
     let sigInfo=sign( ticket , url );
-    console.log('ticket',ticket);
+    console.log('server sig ticket',ticket);
     delete sigInfo.jsapi_ticket
     return sigInfo;
 }
-
-
 
 
 module.exports = {

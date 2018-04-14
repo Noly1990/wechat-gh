@@ -20,19 +20,24 @@ router.post('/getSig',indexControl.getSig)
 
 router.get('/index', async (ctx, next) => {
   await ctx.render('index', {
-    title: "welcome koa2"
+    title: "测试主页"
   })
 })
 
 
-
-router.get('/testpage', async (ctx, next) => {
-  await ctx.render('testpage', {
-    title: "this is testpage",
+router.get('/outhpage', async (ctx, next) => {
+  await ctx.render('outhpage', {
+    title: "授权页面",
     appid
   })
 })
 
+
+router.get('/pay', async (ctx, next) => {
+  await ctx.render('pay', {
+    title: "游戏充值"
+  })
+})
 
 
 module.exports = router

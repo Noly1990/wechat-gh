@@ -8,7 +8,7 @@ axios.post(`/getSig`, {
     console.log('broser signInfo', sigInfo)
     wx.config({
         debug: true, 
-        appId: 'wxc6f411ed9dc04773', 
+        appId: sigInfo.appid, 
         timestamp: sigInfo.timestamp, 
         nonceStr: sigInfo.nonceStr, 
         signature: sigInfo.signature,

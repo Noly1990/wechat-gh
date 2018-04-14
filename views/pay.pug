@@ -2,13 +2,11 @@ extends layout
 
 block append head
   script(src="https://unpkg.com/axios/dist/axios.min.js")
-  script(src="/javascripts/userAuth.js")
   script(src="/javascripts/initJssdk.js")
 
 block content
   h1= title
-  button(onclick='chooseImg()') ChooseImg
-  p Welcome to #{title}
+  button(onclick='chooseImg()') 选择图片
+  p 欢迎来到 #{title}
   script.
-    console.log('this is index pug script')
-    
+    console.log('这是支付页面')

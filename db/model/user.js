@@ -32,6 +32,18 @@ const User=sequelize.define('user',{
     },
     telephone:{
         type: Sequelize.STRING
+    },
+    access_token:{
+        type: Sequelize.STRING
+    },
+    last_access_token_time:{
+       type: Sequelize.INTEGER
+    },
+    refresh_token:{
+        type: Sequelize.STRING
+    },
+    last_refresh_token_time:{
+        type: Sequelize.INTEGER
     }
 });
 module.exports=User

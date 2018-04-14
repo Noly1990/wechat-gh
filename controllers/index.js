@@ -3,6 +3,7 @@ const xml2js = require('xml2js');
 const { answerText,answerEvent } = require('../utils/answer')
 const { exchangeAuthToken, getUserInfo } = require('../utils/userAuthToken')
 const { signatureSdk } = require('../utils/getTokenOrTicket')
+const { appid } =require('../danger.config');
 
 async function pureGet(ctx, next) {
     const { echostr } = ctx.query;
@@ -76,10 +77,17 @@ async function postCode(ctx, next) {
 }
 
 async function getSig(ctx, next) {
+
     let { url } = ctx.request.body;
     console.log('sig-url', url)
+
     let sigInfo = await signatureSdk(url);
     console.log('sigInfo', sigInfo)
+
+    Object.assign(sigInfo,{
+        appid
+    })
+    console.log('server side sign info')
     ctx.body = sigInfo;
 
 }

@@ -44,6 +44,20 @@ async function checkToken(token, openid) {
 }
 
 
+async function refreshToken(r_token, openid) {
+    let aimUrl = `https://api.weixin.qq.com/sns/oauth2/refresh_token?appid=${appid}&grant_type=refresh_token&refresh_token=${r_token}`
+    let refreshRes = await new Promise(function (resolve, reject) {
+        axios.get(aimUrl).then(res => {
+            resolve(res)
+        }).catch(err => {
+            console.log('refresh token err', err);
+            reject(err)
+        })
+    });
+    //刷新成功或不成功
+    return refreshRes.data
+}
+
 module.exports = {
     exchangeAuthToken,
     getUserInfo,
