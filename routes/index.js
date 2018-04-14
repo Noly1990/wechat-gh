@@ -18,6 +18,17 @@ router.post('/postCode', indexControl.postCode)
 
 router.post('/getSig',indexControl.getSig)
 
+const { aesDecrypt, aesEncrypt } = require('../crypto')
+
+router.get('/testcookies',  async (ctx, next) => {
+    let cryptoId=ctx.cookies.get('cryptoId');
+    let openId=aesDecrypt(cryptoId);
+    ctx.body={
+      openId
+    }
+})
+
+
 router.get('/index', async (ctx, next) => {
   await ctx.render('index', {
     title: "测试主页"
@@ -38,6 +49,20 @@ router.get('/pay', async (ctx, next) => {
     title: "游戏充值"
   })
 })
+
+
+router.get('/download', async (ctx, next) => {
+  await ctx.render('download', {
+    title: "下载游戏"
+  })
+})
+
+router.get('/mine', async (ctx, next) => {
+  await ctx.render('mine', {
+    title: "个人中心"
+  })
+})
+
 
 
 module.exports = router

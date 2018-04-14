@@ -2,7 +2,7 @@ const axios=require('axios');
 
 const fs=require('fs');
 
-const {checkAndGetToken}=require('./getTokenOrTicket')
+const { checkAndGetToken } = require('./getTokenOrTicket')
 
 let buttonsConfig=fs.readFileSync('./config/buttons.json')
 let jsonObj=JSON.parse(buttonsConfig.toString());

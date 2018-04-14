@@ -4,11 +4,10 @@ let code=getQueryString('code');
 if (code) {
     axios.post('/postCode',{
         code
-    }).then(res=>{console.log('res',res)})
+    }).then(res=>{console.log('code to info',res)})
+    console.log('recent href',window.location.href);
 }else {
-    let oldHref=window.location.href;
-    console.log('oldhref',oldHref)
-    window.location.href=`http://www.baidu.com?redirect=${encodeURIComponent(oldHref)}`;
+    console.log('recent href',window.location.href);
 }
 
 function getQueryString(name) {

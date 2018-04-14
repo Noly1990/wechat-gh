@@ -1,9 +1,9 @@
 
 const xml2js = require('xml2js');
-const { answerText,answerEvent } = require('../utils/answer')
+const { answerText, answerEvent } = require('../utils/answer')
 const { exchangeAuthToken, getUserInfo } = require('../utils/userAuthToken')
 const { signatureSdk } = require('../utils/getTokenOrTicket')
-const { appid } =require('../danger.config');
+const { appid } = require('../danger.config');
 
 async function pureGet(ctx, next) {
     const { echostr } = ctx.query;
@@ -16,7 +16,7 @@ async function purePost(ctx, next) {
     let xml = ctx.request.body.xml;
     const { MsgType } = xml;
 
-    console.log('MsgType',MsgType)
+    console.log('MsgType', MsgType)
     switch (MsgType) {
         case 'text':
             let jsonText = answerText(xml);
@@ -26,8 +26,8 @@ async function purePost(ctx, next) {
                 aimXML = textBuilder.buildObject({
                     xml: jsonText
                 })
-            }else {
-                aimXML= jsonText;
+            } else {
+                aimXML = jsonText;
             }
             ctx.body = aimXML;
             break;
@@ -40,8 +40,8 @@ async function purePost(ctx, next) {
                 eventXML = eventBuilder.buildObject({
                     xml: jsonEvent
                 })
-            }else {
-                eventXML= jsonEvent;
+            } else {
+                eventXML = jsonEvent;
             }
             ctx.body = eventXML;
             break;
@@ -64,13 +64,18 @@ async function purePost(ctx, next) {
     console.log('xml', xml)
 }
 
+const { aesDecrypt, aesEncrypt } = require('../crypto')
+
 async function postCode(ctx, next) {
     let json = ctx.request.body;
     let tokenRes = await exchangeAuthToken(json.code);
     let openid = tokenRes.openid;
     let token = tokenRes.access_token;
     let infoRes = await getUserInfo(token, openid);
-    console.log('infoRes',infoRes);
+    console.log('infoRes', infoRes);
+    let cryptoId=aesEncrypt(openid)
+    ctx.cookies.set('cryptoId', cryptoId);
+
     ctx.body = {
         infoRes
     }
@@ -84,7 +89,7 @@ async function getSig(ctx, next) {
     let sigInfo = await signatureSdk(url);
     console.log('sigInfo', sigInfo)
 
-    Object.assign(sigInfo,{
+    Object.assign(sigInfo, {
         appid
     })
     console.log('server side sign info')
