@@ -2,7 +2,7 @@ const Sequelize=require('sequelize');
 
 const mysql=require('../index');
 
-const {sequelize}=mysql;
+const { sequelize }=mysql;
 
 const Order=sequelize.define('user',{
     //订单号码

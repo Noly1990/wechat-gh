@@ -1,49 +1,55 @@
-const Sequelize=require('sequelize');
+const Sequelize = require('sequelize');
 
-const mysql=require('../index');
+const mysql = require('../index');
 
-const {sequelize}=mysql;
+const {
+    sequelize
+} = mysql;
 
-const User=sequelize.define('user',{
-    openid:{
+const User = sequelize.define('user', {
+    openid: {
         type: Sequelize.STRING
     },
-    unionid:{
+    unionid: {
         type: Sequelize.STRING
     },
-    nickname:{
+    nickname: {
         type: Sequelize.STRING
     },
-    sex:{
+    sex: {
         type: Sequelize.INTEGER,
-        defaultValue:0
+        defaultValue: 0
     },
-    city:{
+    city: {
         type: Sequelize.STRING
     },
-    province:{
+    province: {
         type: Sequelize.STRING
     },
-    country:{
+    country: {
         type: Sequelize.STRING
     },
-    headimgurl:{
+    headimgurl: {
         type: Sequelize.STRING
     },
-    telephone:{
+    telephone: {
         type: Sequelize.STRING
     },
-    access_token:{
+    bonus_points: {
+        type: Sequelize.INTEGER,
+        defaultValue: 0
+    },
+    access_token: {
         type: Sequelize.STRING
     },
-    last_access_token_time:{
-       type: Sequelize.INTEGER
+    last_access_token_time: {
+        type: Sequelize.INTEGER
     },
-    refresh_token:{
+    refresh_token: {
         type: Sequelize.STRING
     },
-    last_refresh_token_time:{
+    last_refresh_token_time: {
         type: Sequelize.INTEGER
     }
 });
-module.exports=User
+module.exports = User
