@@ -89,6 +89,17 @@ function answerEvent(xmlObj) {
                         Content: `您点击的是赞一下我们`
                     }
                     break;
+                case 'Attendance':
+                    return {
+                        ToUserName: FromUserName,
+                        FromUserName: ToUserName,
+                        CreateTime: time,
+                        MsgType: 'text',
+                        Content: `您点击的是每日签到-您已签到`
+                    }
+                    break;
+
+                     
                 default:
                     return {
                         ToUserName: FromUserName,

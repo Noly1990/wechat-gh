@@ -1,27 +1,42 @@
 {
     "button": [
         {
-            "type": "view",
-            "name": "下载游戏",
-            "url": "http://long.lxxiyou.cn/download"
+            "name": "活动中心",
+            "sub_button": [
+                {
+                    "type": "click",
+                    "name": "赞一下我们",
+                    "key": "V1001_GOOD"
+                },
+                {
+                    "type": "click",
+                    "name": "每日签到",
+                    "key": "Attendance"
+                }
+            ]
         },
         {
-            "type": "view",
-            "name": "游戏充值",
-            "url": "http://long.lxxiyou.cn/outhpage?aimpage=http%3a%2f%2flong.lxxiyou.cn%2fpay"
+            "name": "游戏服务",
+            "sub_button": [
+                {
+                    "type": "view",
+                    "name": "下载游戏",
+                    "url": "http://long.lxxiyou.cn/download"
+                },
+                {
+                    "type": "view",
+                    "name": "游戏充值",
+                    "url": "http://long.lxxiyou.cn/outhpage?aimpage=http%3a%2f%2flong.lxxiyou.cn%2fpay"
+                }
+            ]
         },
         {
-            "name": "我的",
+            "name": "自主服务",
             "sub_button": [
                 {
                     "type": "view",
                     "name": "搜搜搜索",
                     "url": "http://www.soso.com/"
-                },
-                {
-                    "type": "click",
-                    "name": "赞一下我们",
-                    "key": "V1001_GOOD"
                 },
                 {
                     "type": "view",
