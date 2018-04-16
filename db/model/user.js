@@ -13,6 +13,9 @@ const User = sequelize.define('user', {
     unionid: {
         type: Sequelize.STRING
     },
+    gameid: {
+        type: Sequelize.STRING
+    },
     nickname: {
         type: Sequelize.STRING
     },

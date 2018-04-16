@@ -14,6 +14,8 @@ router.get('/', checkSig,indexControl.pureGet )
 
 router.post('/', checkSig, indexControl.purePost)
 
+router.get('/getUserStatus',indexControl.getUserStatus )
+
 router.post('/postCode', indexControl.postCode)
 
 router.post('/getSig',indexControl.getSig)
@@ -26,6 +28,14 @@ router.get('/testcookies',  async (ctx, next) => {
     ctx.body={
       openId
     }
+})
+
+router.get('/testcookies',  async (ctx, next) => {
+  let cryptoId=ctx.cookies.get('cryptoId');
+  let openId=aesDecrypt(cryptoId);
+  ctx.body={
+    openId
+  }
 })
 
 
@@ -41,6 +51,13 @@ router.get('/outhpage', async (ctx, next) => {
     title: "授权页面"
   })
 })
+
+router.get('/guide', async (ctx, next) => {
+  await ctx.render('guide', {
+    title: "统一导航页面"
+  })
+})
+
 
 
 router.all('/outhpage', ctx => {

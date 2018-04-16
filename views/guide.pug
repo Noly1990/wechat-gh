@@ -1,0 +1,23 @@
+extends layout
+
+block append head
+  script(src="https://unpkg.com/axios/dist/axios.min.js")
+  script(src="/javascripts/userAuth.js")
+
+block content
+  h1= title
+  p 欢迎来到 #{title}
+  p 请选择您需要的服务
+  ul
+    li 
+      a(href="/index") 1.签到
+    li
+      a(href="/download") 2.下载游戏
+    li
+      a(href="/pay") 3.游戏充值
+    li
+      a(href="/mine") 4.个人中心
+      
+  script(src="/javascripts/guide.js")
+  script.
+    console.log('这是统一导航页界面')

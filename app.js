@@ -9,8 +9,12 @@ const logger = require('koa-logger')
 const index = require('./routes/index')
 const users = require('./routes/users')
 const xmlParser = require('koa-xml-body')
+const mysql=require('./db')
 // error handler
 onerror(app)
+
+mysql.connect();
+mysql.init();
 
 // middlewares
 app.use(xmlParser({
