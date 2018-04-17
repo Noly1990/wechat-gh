@@ -68,14 +68,14 @@ router.all('/outhpage', ctx => {
 
 router.get('/pay', async (ctx, next) => {
   await ctx.render('pay', {
-    title: "游戏充值"
+    title: "嘻游游戏充值"
   })
 })
 
 
 router.get('/download', async (ctx, next) => {
   await ctx.render('download', {
-    title: "下载游戏"
+    title: "嘻游游戏下载"
   })
 })
 

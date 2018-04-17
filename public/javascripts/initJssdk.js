@@ -1,31 +1,35 @@
 
-let url = window.location.href.split('#')[0];
-console.log('post url', url)
-axios.post(`/getSig`, {
-    url
-}).then(res => {
-    let sigInfo = res.data;
-    console.log('broser signInfo', sigInfo)
-    wx.config({
-        debug: true, 
-        appId: sigInfo.appid, 
-        timestamp: sigInfo.timestamp, 
-        nonceStr: sigInfo.nonceStr, 
-        signature: sigInfo.signature,
-        jsApiList: [
-            'checkJsApi',
-            'onMenuShareTimeline',
-            'onMenuShareAppMessage',
-            'onMenuShareQQ',
-            'onMenuShareWeibo',
-            'hideMenuItems',
-            'chooseImage'
-        ] 
+function initSdk(){
+    let url = window.location.href.split('#')[0];
+    console.log('post url', url)
+    axios.post(`/getSig`, {
+        url
+    }).then(res => {
+        let sigInfo = res.data;
+        console.log('浏览器 signInfo', sigInfo)
+        wx.config({
+            debug: false, 
+            appId: sigInfo.appid, 
+            timestamp: sigInfo.timestamp, 
+            nonceStr: sigInfo.nonceStr, 
+            signature: sigInfo.signature,
+            jsApiList: [
+                'checkJsApi',
+                'onMenuShareTimeline',
+                'onMenuShareAppMessage',
+                'onMenuShareQQ',
+                'onMenuShareWeibo',
+                'hideMenuItems',
+                'chooseImage'
+            ] 
+        })
+    
+    }).catch(err => {
+        console.log(err)
     })
+}
 
-}).catch(err => {
-    console.log(err)
-})
+
 
 function chooseImg() {
     console.log('can choose img')

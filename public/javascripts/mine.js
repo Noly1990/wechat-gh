@@ -1,40 +1,56 @@
 
-function afterCode() {
+function afterAuth() {
   let cookie = document.cookie;
   let cryptoId = getCookie(cookie, 'cryptoId');
-  if (cryptoId){
+  if (cryptoId) {
     axios.get('/getUserStatus').then(res => {
+
       let { userInfo } = res.data;
-    
-      let { nickname, headimgurl, city, sex,openid } = userInfo;
-    
-      initPage(nickname, headimgurl, city, sex);
-      console.log('openid',openid)
-    }).catch(err=>{
-      console.log('getUserStatus',err)
+
+      let { nickname, headimgurl, city, sex, openid, bonus_points, gameid } = userInfo;
+      console.log('客户端 userinfo', userInfo)
+      initPage(nickname, headimgurl, city, sex, bonus_points, gameid);
+      console.log('openid', openid)
+    }).catch(err => {
+      console.log('getUserStatus', err)
     })
   }
 
 }
 
-
-
-var initPage = function (nickname, headimgurl, city, sex) {
+var initPage = function (nickname, headimgurl, city, sex, bonus_points, gameid) {
   var app = new Vue({
     el: '#app',
     template: `
       <div>
-        <img class="user-head" :src="headimgurl" alt="用户头像">
-        <p class="nickname">{{nickname}}</p>
-        <p class="city">{{city}}</p>
-        <p class="sex">{{sex}}</p>
+        <div class="user-info">
+          <img class="user-head" :src="headimgurl" alt="用户头像">
+          
+          <div class="user-id">
+            <div class="user-name">{{nickname}}</div>
+          </div>
+
+          <div class="info-box">
+            <div class="info-item">
+              <div class="item-label">游戏ID</div>
+              <div class="item-content">{{gameid?gameid:'未登陆过游戏'}}</div>
+            </div>
+            <div class="info-item">
+              <div class="item-label">用户积分</div>
+              <div class="item-content">{{bonus_points}}</div>
+            </div>
+          </div>
+          
+        </div>
       </div>
       `,
     data: {
       headimgurl,
       nickname,
       city,
-      sex
+      sex,
+      bonus_points,
+      gameid
     },
     beforeMount: async function () {
       console.log('before mount');

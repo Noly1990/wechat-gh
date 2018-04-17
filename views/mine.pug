@@ -2,18 +2,15 @@ extends layout
 
 block append head
   link(rel="stylesheet", href="/stylesheets/mine.css")
+  link(rel="stylesheet", href="https://unpkg.com/mint-ui/lib/style.css")
   script(src="https://unpkg.com/axios/dist/axios.min.js")
   script(src="https://cdn.jsdelivr.net/npm/vue")
+  script(src="https://unpkg.com/mint-ui/lib/index.js")
   script(src="/javascripts/mine.js")
   script(src="/javascripts/userAuth.js")
 
 block content
-  p 欢迎来到 #{title}
-
-  div(id="app") 数据加载中......
-
+  div(id="app") 数据加载中...
   button(onclick='testCookies()') 测试请求的cookies按钮
-
-
   script.
     console.log('这是个人中心界面')

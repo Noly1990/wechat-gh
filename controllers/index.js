@@ -112,19 +112,20 @@ async function getUserStatus(ctx, next) {
     let findRes = await findUserDb(openid);
     console.log('findres', findRes);
     let { dataValues } = findRes;
-    const { nickname, headimgurl, city, sex } = dataValues;
+    const { nickname, headimgurl, city, sex,bonus_points,gameid } = dataValues;
     let userInfo = {
         openid,
         nickname,
         headimgurl,
         city,
-        sex
+        sex,
+        bonus_points,
+        gameid
     };
 
     ctx.body = {
         code: 1,
-        userInfo,
-        findRes
+        userInfo
     }
 }
 

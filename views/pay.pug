@@ -3,16 +3,15 @@ extends layout
 block append head
   script(src="https://unpkg.com/axios/dist/axios.min.js")
   link(rel="stylesheet", href="/stylesheets/pay.css")
+  link(rel="stylesheet", href="https://unpkg.com/mint-ui/lib/style.css")
   script(src="https://cdn.jsdelivr.net/npm/vue")
+  script(src="https://unpkg.com/mint-ui/lib/index.js")
+  script(src="/javascripts/pay.js")
   script(src="/javascripts/userAuth.js")
   script(src="/javascripts/initJssdk.js")
 
 block content
-  h1= title
-  button(onclick='chooseImg()') 选择图片
-  p 欢迎来到 #{title}
-  div(id="app") 数据加载中......
-  
-  script(src="/javascripts/pay.js")
+  div(id="app") 页面加载中......
+  //- button(onclick='chooseImg()') 选择图片
   script.
     console.log('这是支付页面')

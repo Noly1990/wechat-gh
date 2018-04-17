@@ -90,12 +90,13 @@ function answerEvent(xmlObj) {
                     }
                     break;
                 case 'Attendance':
+                    
                     return {
                         ToUserName: FromUserName,
                         FromUserName: ToUserName,
                         CreateTime: time,
                         MsgType: 'text',
-                        Content: `您点击的是每日签到-您已签到`
+                        Content: `每日签到-您已签到-积分加10`
                     }
                     break;
 

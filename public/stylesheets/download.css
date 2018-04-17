@@ -1,0 +1,25 @@
+.swipe-box {
+    width: 100%;
+    height: 200px;
+    border-radius: 6px;
+}
+
+.swipe-banner-img {
+    width: 100%;
+    height: 100%;
+    border-radius: 6px;
+}
+
+.download-box {
+    padding: 10px 0;
+}
+
+.download-item {
+    
+}
+
+.item-icon {
+    margin-right:20px;
+    border-radius:7px;
+    padding: 5px 0;
+}
