@@ -36,7 +36,7 @@ async function purePost(ctx, next) {
             break;
             break;
         case 'event':
-            let jsonEvent = answerEvent(xml);
+            let jsonEvent =await answerEvent(xml);
             let eventXML;
             if (jsonEvent) {
                 let eventBuilder = new xml2js.Builder();

@@ -42,6 +42,10 @@ const User = sequelize.define('user', {
         type: Sequelize.INTEGER,
         defaultValue: 0
     },
+    daily_attendance:{
+        type:Sequelize.BOOLEAN,
+        defaultValue:true
+    },
     access_token: {
         type: Sequelize.STRING
     },

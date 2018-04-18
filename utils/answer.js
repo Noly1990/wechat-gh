@@ -1,4 +1,5 @@
 const fs = require('fs');
+const { checkDailyAttendanceDb,findUserDb,falseDailyAttendanceDb ,addBonusDb,addLikeSumDb,getLikeSumDb} = require('../db/operate')
 
 function answerText(xmlObj) {
     const { ToUserName, FromUserName, CreateTime, MsgType, Content, MsgId } = xmlObj;
@@ -38,7 +39,7 @@ answerText(
     }
 );
 
-function answerEvent(xmlObj) {
+async function answerEvent(xmlObj) {
     const { ToUserName, FromUserName, CreateTime, MsgType, Event, EventKey } = xmlObj;
     if (MsgType !== 'event') return {
         error: 'error'
@@ -81,23 +82,51 @@ function answerEvent(xmlObj) {
                     }
                     break;
                 case 'V1001_GOOD':
+
+                    let addLikeRes=await addLikeSumDb();
+                    let allLikeSum=await getLikeSumDb();
                     return {
                         ToUserName: FromUserName,
                         FromUserName: ToUserName,
                         CreateTime: time,
                         MsgType: 'text',
-                        Content: `您点击的是赞一下我们`
+                        Content: `/:strong感谢您，当前已经有${allLikeSum}次点赞/:strong！`
                     }
                     break;
                 case 'Attendance':
-                    
-                    return {
-                        ToUserName: FromUserName,
-                        FromUserName: ToUserName,
-                        CreateTime: time,
-                        MsgType: 'text',
-                        Content: `每日签到-您已签到-积分加10`
+                    if (await findUserDb(FromUserName)) {
+                        let daily_attendance=await checkDailyAttendanceDb(FromUserName);
+                        if (daily_attendance) {
+                            let falseRes=await falseDailyAttendanceDb(FromUserName);
+                            let addRes=await addBonusDb(FromUserName,10);
+                            console.log('falseRes',falseRes);
+                            return {
+                                ToUserName: FromUserName,
+                                FromUserName: ToUserName,
+                                CreateTime: time,
+                                MsgType: 'text',
+                                Content: `每日签到-您已签到-积分加10`
+                            }
+                        }else {
+                            return {
+                                ToUserName: FromUserName,
+                                FromUserName: ToUserName,
+                                CreateTime: time,
+                                MsgType: 'text',
+                                Content: `每日签到-您今日已签到-请明天再来`
+                            }
+                        }
+                    }else {
+                        return {
+                            ToUserName: FromUserName,
+                            FromUserName: ToUserName,
+                            CreateTime: time,
+                            MsgType: 'text',
+                            Content: `每日签到-请先去自主服务-个人中心登录`
+                        }
                     }
+                    
+                    
                     break;
 
                      

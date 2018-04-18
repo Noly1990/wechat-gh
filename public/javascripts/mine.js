@@ -29,7 +29,6 @@ var initPage = function (nickname, headimgurl, city, sex, bonus_points, gameid) 
           <div class="user-id">
             <div class="user-name">{{nickname}}</div>
           </div>
-
           <div class="info-box">
             <div class="info-item">
               <div class="item-label">游戏ID</div>
@@ -40,7 +39,6 @@ var initPage = function (nickname, headimgurl, city, sex, bonus_points, gameid) 
               <div class="item-content">{{bonus_points}}</div>
             </div>
           </div>
-          
         </div>
       </div>
       `,

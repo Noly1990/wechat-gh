@@ -1,7 +1,7 @@
 .user-info {
     box-sizing: border-box;
     width: 80%;
-    height: 240px;
+    height: 200px;
     background-color: skyblue;
     margin: 0px 10%;
     margin-top: 60px;
@@ -12,10 +12,10 @@
 
 .user-head {
     display: block;
-    width: 80px;
-    height: 80px;
+    width: 70px;
+    height: 70px;
     position: absolute;
-    top: -40px;
+    top: -35px;
     left: 50%;
     transform: translateX(-50%);
     border-radius: 50%;
