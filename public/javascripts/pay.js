@@ -105,8 +105,8 @@ var initPage = function (nickname, headimgurl) {
 
             },
             testWXPay() {
-                axios.post('/requestUnifiedOrder', { test: 'test' }).then(res => {
-                    console.log('requestUnifiedOrder info', res.data.wxPaySignInfo)
+                axios.post('/requestPayment', { test: 'test' }).then(res => {
+                    console.log('requestPayment info', res.data.wxPaySignInfo)
 
                     let signInfo = res.data.wxPaySignInfo;
                     

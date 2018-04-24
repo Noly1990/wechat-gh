@@ -1,12 +1,12 @@
 const { signMD5, signSha1 } = require('./wxCrypto')
-const { appid, mchid, mchKey,token } = require('../danger.config')
+const { appid, mchid, mchKey, token } = require('../danger.config')
 
 function createNonceStr() {
     return Math.random().toString(36).substr(2, 15);
 };
 
 function generateTradeNumber() {
-    let tradeNumber = 'TradeNo' + createTimestamp();
+    let tradeNumber = 'XYTrade' + createTimestamp();
     return tradeNumber;
 }
 
@@ -15,11 +15,10 @@ function createTimestamp() {
 };
 
 
-function signOrder() {
+function signOrder(openid) {
     let nonce_str = createNonceStr();
     let tradeNum = generateTradeNumber();
     let body = '测试支付';
-    let openid = 'opnLL0dPxnYzRDU-H5koTZpKq2TU';
     let total_fee = 1;
     let stringA = `appid=${appid}&body=${body}&device_info=WEB&mch_id=${mchid}&nonce_str=${nonce_str}&notify_url=http://long.lxxiyou.cn/receivePayInfo&openid=${openid}&out_trade_no=${tradeNum}&sign_type=MD5&spbill_create_ip=115.211.127.161&total_fee=${total_fee}&trade_type=JSAPI`
     let stringSignTemp = stringA + `&key=${mchKey}`;
@@ -79,7 +78,6 @@ function signTicket(jsapi_ticket, url) {
     };
     var string = raw(ret);
     ret.signature = signSha1(string);
-
     return ret;
 };
 
@@ -96,14 +94,30 @@ function checkWX(signature, timestamp, nonce) {
 }
 
 
-class WXKits {
-    constructor(options) {
-        let { appid, mchid, mchKey } = options
-        this.appid=options.appid;
-        this.mchid=options.mchid;
-        this.mchKey=options.mchKey;
-    }
-}
+// class WXKits {
+//     constructor(options) {
+//         let { appid, mchid, mchKey, token } = options
+//         this.appid = options.appid;
+//         this.mchid = options.mchid;
+//         this.mchKey = options.mchKey;
+//     }
+// }
+
+// function initKits(options) {
+//     let { appid, mchid, mchKey, token } = options
+//     return {
+//         appid,
+//         mchid,
+//         mchKey,
+//         token,
+//         signOrder,
+//         signWXPay
+//     }
+// }
+
+exports.checkWX = checkWX;
+exports.signTicket=signTicket;
+
 module.exports = {
     signOrder,
     signWXPay,

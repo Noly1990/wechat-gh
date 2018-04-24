@@ -8,7 +8,7 @@ function initSdk(){
         let sigInfo = res.data;
         console.log('浏览器 signInfo', sigInfo)
         wx.config({
-            debug: true, 
+            debug: false, 
             appId: sigInfo.appid, 
             timestamp: sigInfo.timestamp, 
             nonceStr: sigInfo.nonceStr, 

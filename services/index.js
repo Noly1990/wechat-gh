@@ -1,9 +1,8 @@
 const axios = require('axios')
-const xml2js = require('xml2js');
 const { signMD5 } = require('../crypto/index')
 const { appid, mchid, mchKey, appsecret } = require('../danger.config')
-
-const { signOrder,signTicket } = require('../utils/wxKits')
+const { xml2json, json2xml } = require('../utils/xmlTools')
+const { signOrder, signTicket, signWXPay } = require('../utils/wxKits')
 
 let apiDefault = 'api.weixin.qq.com';
 let apiShangHai = 'sh.api.weixin.qq.com';
@@ -19,11 +18,11 @@ async function checkGameId(unionid) {
 
 }
 
-
-async function createUnifiedOrder() {
+//统一下单api
+async function createUnifiedOrder(openid) {
     let aimurl = `https://api.mch.weixin.qq.com/pay/unifiedorder`;
 
-    let { sign, nonce_str, tradeNum, body, openid, total_fee } = signOrder();
+    let { sign, nonce_str, tradeNum, body, total_fee } = signOrder(openid);
 
     let requsetJson = {
         appid,
@@ -41,18 +40,13 @@ async function createUnifiedOrder() {
         trade_type: 'JSAPI'
     }
 
-    let textBuilder = new xml2js.Builder();
-    let aimXML;
-    aimXML = textBuilder.buildObject({
-        xml: requsetJson
-    });
+
+    let requestXML = json2xml(requsetJson);
 
     let orderRes = await new Promise(function (resolve, reject) {
-        axios.post(aimurl, aimXML).then(res => {
-            var xmlParser = new xml2js.Parser({ explicitArray: false, ignoreAttrs: true });
-            xmlParser.parseString(res.data, function (err, json) {
-                resolve(json.xml)
-            })
+        axios.post(aimurl, requestXML).then(async res => {
+            let json = await xml2json(res.data)
+            resolve(json);
         }).catch(err => {
             console.log('unipay err', err)
             reject(err)
@@ -60,6 +54,14 @@ async function createUnifiedOrder() {
     })
     return orderRes;
 
+}
+
+//统一下单后的生成pay信息的api
+async function createPayment(openid) {
+    let orderRes = await createUnifiedOrder(openid);
+    let prepay_id = orderRes.prepay_id;
+    let wxPaySignInfo = signWXPay(prepay_id);
+    return wxPaySignInfo;
 }
 
 //这是全局api调用的access_token
@@ -185,6 +187,7 @@ module.exports = {
     signatureSdk,
     exchangeAuthToken,
     getUserInfo,
-    checkToken
+    checkToken,
+    createPayment
 }
 

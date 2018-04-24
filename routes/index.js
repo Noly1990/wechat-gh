@@ -56,7 +56,7 @@ router.all('/receivePayInfo', ctx => {
 })
 
 
-router.post('/requestUnifiedOrder', indexControl.generateUnifiedOrder)
+router.post('/requestPayment', indexControl.requestPayment)
 
 
 router.all('/outhpage', ctx => {

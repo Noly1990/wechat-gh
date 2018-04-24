@@ -34,6 +34,8 @@
 
 ## 整个业务逻辑的整理
 
+- 2018-4-24的一次重构，把微信相关的接口提取出来，把service相关的东西聚合在一起,一个是utils里的wxKits,一个是services
+
 ## 合并了实际开发
 
 请学习交流的亲，使用base.config.js(请用自己的参数)代替danger.config.js(未上传)
