@@ -58,8 +58,8 @@ var initPage = function (nickname, headimgurl) {
         </div>
         `,
         data: {
-            gameid:'',
-            paynum:'',
+            gameid: '',
+            paynum: '',
             nickname,
             headimgurl,
             radioOptions: [
@@ -72,11 +72,11 @@ var initPage = function (nickname, headimgurl) {
                     value: 'others'
                 }
             ],
-            radioValue:'self',
+            radioValue: 'self',
         },
-        computed:{
-            paysum(){
-                return 3*this.paynum;
+        computed: {
+            paysum() {
+                return 3 * this.paynum;
             }
         },
         beforeMount: async function () {
@@ -90,22 +90,38 @@ var initPage = function (nickname, headimgurl) {
                 this.$indicator.close()
             }.bind(this))
         },
-        methods:{
+        methods: {
 
-            handlePay(){
-                if (this.radioValue==='self'){
+            handlePay() {
+                if (this.radioValue === 'self') {
                     this.$messagebox.confirm(`您正在给自己充值，充值金额是${this.paysum}`).then(action => {
-  
+
                     });
-                }else {
+                } else {
                     this.$messagebox.confirm(`您正在给别人充值ID为${this.gameid}，充值金额为${this.paysum}`).then(action => {
-  
+
                     });
                 }
-                
+
             },
-            testWXPay(){
-                console.log('test wx pay')
+            testWXPay() {
+                axios.post('/requestUnifiedOrder', { test: 'test' }).then(res => {
+                    console.log('requestUnifiedOrder info', res.data.wxPaySignInfo)
+
+                    let signInfo = res.data.wxPaySignInfo;
+                    
+                    wx.chooseWXPay({
+                        timestamp: signInfo.timestamp, // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
+                        nonceStr: signInfo.nonceStr, // 支付签名随机串，不长于 32 位
+                        package: signInfo.package, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=\*\*\*）
+                        signType: signInfo.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
+                        paySign: signInfo.paySign, // 支付签名
+                        success: function (res) {
+                            // 支付成功后的回调函数
+                            console.log('支付成功')
+                        }
+                    });
+                })
             }
         }
     })

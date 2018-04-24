@@ -7,6 +7,9 @@ const { appid } = require('../danger.config');
 
 const { addNewUserDb, findUserDb } = require('../db/operate')
 
+const { aesDecrypt, aesEncrypt } = require('../crypto')
+
+const { signWXPay } = require('../utils/wxPayTool')
 
 async function pureGet(ctx, next) {
     const { echostr } = ctx.query;
@@ -36,7 +39,7 @@ async function purePost(ctx, next) {
             break;
             break;
         case 'event':
-            let jsonEvent =await answerEvent(xml);
+            let jsonEvent = await answerEvent(xml);
             let eventXML;
             if (jsonEvent) {
                 let eventBuilder = new xml2js.Builder();
@@ -66,9 +69,6 @@ async function purePost(ctx, next) {
     }
     console.log('xml', xml)
 }
-
-const { aesDecrypt, aesEncrypt } = require('../crypto')
-
 
 
 async function postCode(ctx, next) {
@@ -112,7 +112,7 @@ async function getUserStatus(ctx, next) {
     let findRes = await findUserDb(openid);
     console.log('findres', findRes);
     let { dataValues } = findRes;
-    const { nickname, headimgurl, city, sex,bonus_points,gameid } = dataValues;
+    const { nickname, headimgurl, city, sex, bonus_points, gameid } = dataValues;
     let userInfo = {
         openid,
         nickname,
@@ -148,11 +148,35 @@ async function getSig(ctx, next) {
 
 }
 
+const { createUnifiedOrder } = require('../services')
+
+async function generateUnifiedOrder(ctx, next) {
+
+    let cryptoId = ctx.cookies.get('cryptoId');
+
+    let openId = aesDecrypt(cryptoId);
+
+    console.log('openid', openId);
+
+    
+    let json = ctx.request.body;
+
+    let orderRes = await createUnifiedOrder();
+    let prepay_id = orderRes.prepay_id;
+    let wxPaySignInfo = signWXPay(prepay_id);
+
+    ctx.body = {
+        code: 1,
+        message: 'generateUnifiedOrder',
+        wxPaySignInfo
+    }
+}
 
 module.exports = {
     pureGet,
     purePost,
     postCode,
     getSig,
-    getUserStatus
+    getUserStatus,
+    generateUnifiedOrder
 }

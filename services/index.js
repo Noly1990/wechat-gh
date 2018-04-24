@@ -6,10 +6,12 @@ async function checkGameId(unionid) {
 
 }
 
+const { signOrder } = require('../utils/wxPayTools')
+
 async function createUnifiedOrder() {
     let aimurl = `https://api.mch.weixin.qq.com/pay/unifiedorder`;
 
-    let { sign, nonce_str, tradeNum, body, openid, total_fee } = signPay();
+    let { sign, nonce_str, tradeNum, body, openid, total_fee } = signOrder();
 
     let requsetJson = {
         appid,
@@ -34,44 +36,20 @@ async function createUnifiedOrder() {
         xml: requsetJson
     });
     console.log('pay sign', aimXML)
-    axios.post(aimurl, aimXML).then(res => {
-        console.log('unipay res', res.data)
-    }).catch(err => {
-        console.log('unipay err', err)
+    let orderRes = await new Promise(function (resolve, reject) {
+        axios.post(aimurl, aimXML).then(res => {
+            var xmlParser = new xml2js.Parser({ explicitArray: false, ignoreAttrs: true });
+            xmlParser.parseString(res.data, function (err, json) {
+                console.log('result json', json)
+                resolve(json.xml)
+            })
+        }).catch(err => {
+            console.log('unipay err', err)
+            reject(err)
+        })
     })
+    return orderRes;
 
-}
-
-function createNonceStr() {
-    return Math.random().toString(36).substr(2, 15);
-};
-
-function generateTradeNumber() {
-    let tradeNumber = 'TradeNo' + createTimestamp();
-    return tradeNumber;
-}
-
-function createTimestamp() {
-    return parseInt(new Date().getTime() / 1000) + '';
-};
-
-function signPay() {
-    let nonce_str = createNonceStr();
-    let tradeNum = generateTradeNumber();
-    let body = '测试支付';
-    let openid = 'opnLL0dPxnYzRDU-H5koTZpKq2TU';
-    let total_fee = 1;
-    let stringA = `appid=${appid}&body=${body}&device_info=WEB&mch_id=${mchid}&nonce_str=${nonce_str}&notify_url=http://long.lxxiyou.cn/receivePayInfo&openid=${openid}&out_trade_no=${tradeNum}&sign_type=MD5&spbill_create_ip=115.211.127.161&total_fee=${total_fee}&trade_type=JSAPI`
-    let stringSignTemp = stringA + `&key=${mchKey}`;
-    let sign = signMD5(stringSignTemp).toUpperCase();
-    return {
-        sign,
-        nonce_str,
-        tradeNum,
-        body,
-        openid,
-        total_fee
-    }
 }
 
 

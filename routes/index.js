@@ -3,39 +3,28 @@ const checkWX = require('../utils/checkWX')
 
 const checkSig = require('../middlewares/checkSig')
 
-const indexControl=require('../controllers/index')
+const indexControl = require('../controllers/index')
 
-const {appid}=require('../danger.config')
+const { appid } = require('../danger.config')
 
-const {createUnifiedOrder}=require('../services')
-
-let access_token = '';
-let expiration = new Date();
-
-router.get('/', checkSig,indexControl.pureGet )
+router.get('/', checkSig, indexControl.pureGet)
 
 router.post('/', checkSig, indexControl.purePost)
 
-router.get('/getUserStatus',indexControl.getUserStatus )
+router.get('/getUserStatus', indexControl.getUserStatus)
 
 router.post('/postCode', indexControl.postCode)
 
-router.post('/getSig',indexControl.getSig)
+router.post('/getSig', indexControl.getSig)
 
 const { aesDecrypt, aesEncrypt } = require('../crypto')
 
-router.get('/testcookies',  async (ctx, next) => {
-    let cryptoId=ctx.cookies.get('cryptoId');
-    let openId=aesDecrypt(cryptoId);
-    ctx.body={
-      openId
-    }
-})
 
-router.get('/testcookies',  async (ctx, next) => {
-  let cryptoId=ctx.cookies.get('cryptoId');
-  let openId=aesDecrypt(cryptoId);
-  ctx.body={
+
+router.get('/testcookies', async (ctx, next) => {
+  let cryptoId = ctx.cookies.get('cryptoId');
+  let openId = aesDecrypt(cryptoId);
+  ctx.body = {
     openId
   }
 })
@@ -61,21 +50,18 @@ router.get('/guide', async (ctx, next) => {
 })
 
 
-router.all('/receivePayInfo',ctx=>{
-  console.log('receivePayInfo',ctx)
+router.all('/receivePayInfo', ctx => {
+  console.log('receivePayInfo', ctx)
+  console.log('receivePayInfo', ctx.request.body)
+
 })
 
 
-router.get('/testUnipay',ctx=>{
-  console.log('---------------------------------------------------')
-  let aimXML=createUnifiedOrder();
-  console.log('---------------------------------------------------')
-  ctx.body=aimXML
-})
+router.post('/requestUnifiedOrder', indexControl.generateUnifiedOrder)
 
 
 router.all('/outhpage', ctx => {
-  let aimpage=ctx.query.aimpage;
+  let aimpage = ctx.query.aimpage;
   ctx.redirect(`https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appid}&redirect_uri=${aimpage}&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect`);
   ctx.status = 302;
 });
