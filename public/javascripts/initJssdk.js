@@ -20,7 +20,8 @@ function initSdk(){
                 'onMenuShareQQ',
                 'onMenuShareWeibo',
                 'hideMenuItems',
-                'chooseImage'
+                'chooseImage',
+                'chooseWXPay'
             ] 
         })
     

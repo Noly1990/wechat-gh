@@ -52,6 +52,7 @@ var initPage = function (nickname, headimgurl) {
                     <span class="text-paysum">{{paysum}}</span>
                 </mt-cell>
                 <mt-button @click.native="handlePay" class="pay-btn" type="primary">确认支付</mt-button>
+                <mt-button @click.native="testWXPay" class="pay-btn" type="primary">测试微信支付</mt-button>
             </div>
 
         </div>
@@ -102,6 +103,9 @@ var initPage = function (nickname, headimgurl) {
                     });
                 }
                 
+            },
+            testWXPay(){
+                console.log('test wx pay')
             }
         }
     })

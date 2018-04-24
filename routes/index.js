@@ -7,6 +7,8 @@ const indexControl=require('../controllers/index')
 
 const {appid}=require('../danger.config')
 
+const {createUnifiedOrder}=require('../services')
+
 let access_token = '';
 let expiration = new Date();
 
@@ -58,6 +60,18 @@ router.get('/guide', async (ctx, next) => {
   })
 })
 
+
+router.all('/receivePayInfo',ctx=>{
+  console.log('receivePayInfo',ctx)
+})
+
+
+router.get('/testUnipay',ctx=>{
+  console.log('---------------------------------------------------')
+  let aimXML=createUnifiedOrder();
+  console.log('---------------------------------------------------')
+  ctx.body=aimXML
+})
 
 
 router.all('/outhpage', ctx => {
