@@ -1,5 +1,4 @@
 const router = require('koa-router')()
-const checkWX = require('../utils/checkWX')
 
 const checkSig = require('../middlewares/checkSig')
 

@@ -1,4 +1,4 @@
-const checkWX = require('../utils/checkWX')
+const { checkWX } = require('../utils/wxKits')
 
 module.exports = async function (ctx, next) {
     const { signature, timestamp, nonce } = ctx.query;

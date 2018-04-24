@@ -1,15 +1,16 @@
 
 const xml2js = require('xml2js');
 const { answerText, answerEvent } = require('../utils/answer')
-const { exchangeAuthToken, getUserInfo } = require('../utils/userAuthToken')
-const { signatureSdk } = require('../utils/getTokenOrTicket')
+const { exchangeAuthToken, getUserInfo, signatureSdk } = require('../services')
+
+
 const { appid } = require('../danger.config');
 
 const { addNewUserDb, findUserDb } = require('../db/operate')
 
 const { aesDecrypt, aesEncrypt } = require('../crypto')
 
-const { signWXPay } = require('../utils/wxPayTool')
+const { signWXPay } = require('../utils/wxKits')
 
 async function pureGet(ctx, next) {
     const { echostr } = ctx.query;
@@ -158,7 +159,7 @@ async function generateUnifiedOrder(ctx, next) {
 
     console.log('openid', openId);
 
-    
+
     let json = ctx.request.body;
 
     let orderRes = await createUnifiedOrder();
