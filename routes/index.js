@@ -18,7 +18,7 @@ router.post('/getSig', indexControl.getSig)
 
 const { aesDecrypt, aesEncrypt } = require('../crypto')
 
-
+router.get('/checkGameId',indexControl.checkGameId)
 
 router.get('/testcookies', async (ctx, next) => {
   let cryptoId = ctx.cookies.get('cryptoId');

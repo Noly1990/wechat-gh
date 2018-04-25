@@ -35,18 +35,26 @@ class MySql {
 
         const User = require('./model/user');
         const Store = require('./model/store')
+        const Order =require('./model/order')
 
         User.sync({ force: true }).then(() => {
+            console.log('User init success!')
             // Table created
         }).catch(err => { console.log(err) });
-        console.log('User init success!')
+
+        Order.sync({ force: true }).then(() => {
+            console.log('Order init success!')
+            // Table created
+        }).catch(err => { console.log(err) });
+
         Store.sync({ force: true }).then(() => {
+            console.log('Store init success!');
             Store.create({
                 dataName: 'like_sum',
                 dataNumberValue: 0
             }).then(res => {console.log('add like sum') }).catch(err => { console.log(err) })
         }).catch(err => { console.log(err) });
-        console.log('Store init success!');
+        
 
        
     }

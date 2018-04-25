@@ -160,11 +160,20 @@ async function requestPayment(ctx, next) {
     }
 }
 
+async function checkGameId(ctx,next) {
+    ctx.body={
+        code:-1,
+        message:'用户存在'
+    }
+}
+
+
 module.exports = {
     pureGet,
     purePost,
     postCode,
     getSig,
     getUserStatus,
-    requestPayment
+    requestPayment,
+    checkGameId
 }
