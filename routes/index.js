@@ -18,7 +18,9 @@ router.post('/getSig', indexControl.getSig)
 
 const { aesDecrypt, aesEncrypt } = require('../crypto')
 
-router.get('/checkGameId',indexControl.checkGameId)
+const { checkPayment } = require('../services/index')
+
+router.get('/checkGameId', indexControl.checkGameId)
 
 router.get('/testcookies', async (ctx, next) => {
   let cryptoId = ctx.cookies.get('cryptoId');
@@ -49,10 +51,16 @@ router.get('/guide', async (ctx, next) => {
 })
 
 
-router.all('/receivePayInfo', ctx => {
-  console.log('receivePayInfo', ctx)
-  console.log('receivePayInfo', ctx.request.body)
-
+router.all('/receivePayInfo', async ctx => {
+  console.log('receivePayInfo', ctx.request.body.xml)
+  let xml = ctx.request.body.xml;
+  const { transaction_id } = xml;
+  let checkRes = await checkPayment(transaction_id);
+  console.log('receivePayInfo', checkRes)
+  ctx.body = `<xml>
+                <return_code><![CDATA[SUCCESS]]></return_code>
+                <return_msg><![CDATA[OK]]></return_msg>
+              </xml>`;
 })
 
 

@@ -15,7 +15,7 @@ function afterAuth() {
       });
   }
 }
-var initPage = function(nickname, headimgurl) {
+var initPage = function (nickname, headimgurl) {
   var app = new Vue({
     el: "#app",
     template: `
@@ -106,7 +106,7 @@ var initPage = function(nickname, headimgurl) {
         return returnValue;
       }
     },
-    beforeMount: async function() {
+    beforeMount: async function () {
       console.log("before mount");
       initSdk();
       this.$indicator.open({
@@ -114,7 +114,7 @@ var initPage = function(nickname, headimgurl) {
         spinnerType: "fading-circle"
       });
       wx.ready(
-        function() {
+        function () {
           this.$indicator.close();
         }.bind(this)
       );
@@ -126,6 +126,29 @@ var initPage = function(nickname, headimgurl) {
             .confirm(`您正在给自己充值，充值金额是${this.paysum}`)
             .then(action => {
               console.log(action);
+              let postData = {
+                payTarget: this.radioValue,
+                goodType: this.radio2Value,
+                totalPrice: this.paysum
+              };
+
+              axios.post("/requestPayment", postData).then(res => {
+                console.log("requestPayment info", res.data.wxPaySignInfo);
+                let signInfo = res.data.wxPaySignInfo;
+                wx.chooseWXPay({
+                  timestamp: signInfo.timestamp, // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
+                  nonceStr: signInfo.nonceStr, // 支付签名随机串，不长于 32 位
+                  package: signInfo.package, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=\*\*\*）
+                  signType: signInfo.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
+                  paySign: signInfo.paySign, // 支付签名
+                  success: function (res) {
+                    // 支付成功后的回调函数
+                    console.log("支付成功");
+                  }
+                });
+              });
+
+
             })
             .catch(err => {
               console.log(err);
@@ -143,6 +166,27 @@ var initPage = function(nickname, headimgurl) {
               )
               .then(action => {
                 console.log(action);
+                let postData = {
+                  payTarget: this.radioValue,
+                  goodType: this.radio2Value,
+                  totalPrice: this.paysum
+                };
+
+                axios.post("/requestPayment", postData).then(res => {
+                  console.log("requestPayment info", res.data.wxPaySignInfo);
+                  let signInfo = res.data.wxPaySignInfo;
+                  wx.chooseWXPay({
+                    timestamp: signInfo.timestamp, // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
+                    nonceStr: signInfo.nonceStr, // 支付签名随机串，不长于 32 位
+                    package: signInfo.package, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=\*\*\*）
+                    signType: signInfo.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
+                    paySign: signInfo.paySign, // 支付签名
+                    success: function (res) {
+                      // 支付成功后的回调函数
+                      console.log("支付成功");
+                    }
+                  });
+                });
               })
               .catch(err => {
                 console.log(err);
@@ -152,32 +196,21 @@ var initPage = function(nickname, headimgurl) {
       },
       testWXPay() {
         //type10 20 50 100 optional
-        let postData = {};
-        if (this.radioValue === "self") {
-          postData = {
+        let postData = {
             payTarget: this.radioValue,
             goodType: this.radio2Value,
             totalPrice: this.paysum
-          };
-        } else {
-          postData = {
-            payTarget: this.radioValue,
-            goodType: this.radio2Value,
-            totalPrice: this.paysum
-          };
         }
         axios.post("/requestPayment", postData).then(res => {
           console.log("requestPayment info", res.data.wxPaySignInfo);
-
           let signInfo = res.data.wxPaySignInfo;
-
           wx.chooseWXPay({
             timestamp: signInfo.timestamp, // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
             nonceStr: signInfo.nonceStr, // 支付签名随机串，不长于 32 位
             package: signInfo.package, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=\*\*\*）
             signType: signInfo.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
             paySign: signInfo.paySign, // 支付签名
-            success: function(res) {
+            success: function (res) {
               // 支付成功后的回调函数
               console.log("支付成功");
             }

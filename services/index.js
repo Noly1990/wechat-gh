@@ -2,7 +2,7 @@ const axios = require('axios')
 const { signMD5 } = require('../crypto/index')
 const { appid, mchid, mchKey, appsecret } = require('../danger.config')
 const { xml2json, json2xml } = require('../utils/xmlTools')
-const { signOrder, signTicket, signWXPay } = require('../utils/wxKits')
+const { signOrder, signTicket, signWXPay,signCheckPay } = require('../utils/wxKits')
 
 let apiDefault = 'api.weixin.qq.com';
 let apiShangHai = 'sh.api.weixin.qq.com';
@@ -20,7 +20,7 @@ async function checkGameId(unionid) {
 
 //统一下单api
 async function createUnifiedOrder(openid) {
-    let aimurl = `https://api.mch.weixin.qq.com/pay/unifiedorder`;
+    let aimUrl = `https://api.mch.weixin.qq.com/pay/unifiedorder`;
 
     let { sign, nonce_str, tradeNum, body, total_fee } = signOrder(openid);
 
@@ -44,11 +44,11 @@ async function createUnifiedOrder(openid) {
     let requestXML = json2xml(requsetJson);
 
     let orderRes = await new Promise(function (resolve, reject) {
-        axios.post(aimurl, requestXML).then(async res => {
+        axios.post(aimUrl, requestXML).then(async res => {
             let json = await xml2json(res.data)
             resolve(json);
         }).catch(err => {
-            console.log('unipay err', err)
+            console.log('createUnifiedOrder err', err)
             reject(err)
         })
     })
@@ -63,6 +63,36 @@ async function createPayment(openid) {
     let wxPaySignInfo = signWXPay(prepay_id);
     return wxPaySignInfo;
 }
+
+
+//支付完成信息的订单查询api
+async function checkPayment(transaction_id) {
+    let aimUrl = `https://api.mch.weixin.qq.com/pay/orderquery`;
+    let { appid,mch_id,nonce_str,sign,sign_type }=signCheckPay(transaction_id);
+    let requsetJson={
+        appid,
+        mch_id,
+        nonce_str,
+        transaction_id,
+        sign,
+        sign_type
+    }
+    let requestXML = json2xml(requsetJson);
+    let checkRes = await new Promise(function (resolve, reject) {
+        axios.post(aimUrl, requestXML).then(async res => {
+            let json = await xml2json(res.data)
+            resolve(json);
+        }).catch(err => {
+            console.log('unipay err', err)
+            reject(err)
+        })
+    })
+    console.log('checkPayment checkRes',checkRes)
+    return checkRes;
+}
+
+
+
 
 //这是全局api调用的access_token
 
@@ -189,6 +219,7 @@ module.exports = {
     exchangeAuthToken,
     getUserInfo,
     checkToken,
-    createPayment
+    createPayment,
+    checkPayment
 }
 

@@ -68,33 +68,39 @@ async function postCode(ctx, next) {
 
     let tokenRes = await exchangeAuthToken(json.code);
 
-    let openid = tokenRes.openid;
+    if (tokenRes.openid) {
+        let openid = tokenRes.openid;
 
-    console.log('post code openid',openid);
-
-    let token = tokenRes.access_token;
-
-    let infoRes = await getUserInfo(token, openid);
-
-    let saveRes = await addNewUserDb(infoRes);
-
-    let cryptoId = aesEncrypt(openid);
-
-    ctx.cookies.set('cryptoId', cryptoId, {
-        domain: 'long.lxxiyou.cn',
-        maxAge: 6 * 60 * 60 * 1000,//6小时的cookie的过期时间
-        overwrite: false,
-        httpOnly: false
-    });
-
-
-
-    console.log('infoRes', infoRes);
-
-    ctx.body = {
-        code: 1,
-        message: 'code可用，登陆成功，用户数据处理完毕'
+        console.log('post code openid',openid);
+    
+        let token = tokenRes.access_token;
+    
+        let infoRes = await getUserInfo(token, openid);
+    
+        let saveRes = await addNewUserDb(infoRes);
+    
+        let cryptoId = aesEncrypt(openid);
+    
+        ctx.cookies.set('cryptoId', cryptoId, {
+            domain: 'long.lxxiyou.cn',
+            maxAge: 6 * 60 * 60 * 1000,//6小时的cookie的过期时间
+            overwrite: false,
+            httpOnly: false
+        });
+    
+        console.log('infoRes', infoRes);
+    
+        ctx.body = {
+            code: 1,
+            message: 'code可用，登陆成功，用户数据处理完毕'
+        }
+    }else {
+        ctx.body ={
+            code:-1,
+            message:'code错误，请错误处理'
+        }
     }
+    
 }
 
 
@@ -147,9 +153,11 @@ async function requestPayment(ctx, next) {
 
     let openId = aesDecrypt(cryptoId);
 
-    console.log('openid', openId);
 
-    let json = ctx.request.body;
+    let payInfo = ctx.request.body;
+
+
+    console.log('requestPayment payinfo',payInfo)
 
     let wxPaySignInfo = await createPayment(openId);
 
@@ -159,6 +167,14 @@ async function requestPayment(ctx, next) {
         wxPaySignInfo
     }
 }
+
+
+//对前端的支付请求信息进行验证
+function checkPayInfo(payInfo){
+
+}
+
+
 
 async function checkGameId(ctx,next) {
     ctx.body={

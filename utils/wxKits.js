@@ -2,7 +2,8 @@ const { signMD5, signSha1 } = require('./wxCrypto')
 const { appid, mchid, mchKey, token } = require('../danger.config')
 
 function createNonceStr() {
-    return Math.random().toString(36).substr(2, 15);
+    let randomStr=Math.random().toString(36).substr(2)+Math.random().toString(36).substr(2);
+    return randomStr;
 };
 
 function generateTradeNumber() {
@@ -18,7 +19,7 @@ function createTimestamp() {
 function signOrder(openid) {
     let nonce_str = createNonceStr();
     let tradeNum = generateTradeNumber();
-    let body = '测试支付';
+    let body = '嘻游娱乐-兰花充值';
     let total_fee = 1;
     let stringA = `appid=${appid}&body=${body}&device_info=WEB&mch_id=${mchid}&nonce_str=${nonce_str}&notify_url=http://long.lxxiyou.cn/receivePayInfo&openid=${openid}&out_trade_no=${tradeNum}&sign_type=MD5&spbill_create_ip=115.211.127.161&total_fee=${total_fee}&trade_type=JSAPI`
     let stringSignTemp = stringA + `&key=${mchKey}`;
@@ -48,6 +49,22 @@ function signWXPay(prepay_id) {
         package,
         signType,
         paySign
+    }
+}
+
+
+function signCheckPay(transaction_id) {
+    let nonce_str = createNonceStr();
+    let sign_type="MD5";
+    let stringA=`appid=${appid}&mch_id=${mchid}&nonce_str=${nonce_str}&sign_type=${sign_type}&transaction_id=${transaction_id}`
+    let stringSignTemp = stringA + `&key=${mchKey}`;
+    let sign = signMD5(stringSignTemp).toUpperCase();
+    return {
+        appid,
+        mch_id:mchid,
+        nonce_str,
+        sign,
+        sign_type
     }
 }
 
@@ -116,11 +133,12 @@ function checkWX(signature, timestamp, nonce) {
 // }
 
 exports.checkWX = checkWX;
-exports.signTicket=signTicket;
+exports.signTicket = signTicket;
 
 module.exports = {
     signOrder,
     signWXPay,
     signTicket,
-    checkWX
+    checkWX,
+    signCheckPay
 }

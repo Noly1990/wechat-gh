@@ -18,6 +18,6 @@
     ],
     "default":{
         "replyType":"text",
-        "replyContent":"亲，您需要以下哪种服务呢？\n1.下载游戏(后续是个链接)\n2.寻找客服(后续是个链接)"
+        "replyContent":"亲，您需要以下哪种服务呢？\n1.<a href='http://long.lxxiyou.cn/download'>下载游戏</a>\n2.寻找客服(后续是个链接)"
     }
 }
