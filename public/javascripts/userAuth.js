@@ -16,6 +16,7 @@ if (code) {
         console.log('code res info', res);
         afterAuth();
     }).catch(err=>{
+        window.location.replace(`https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx813ae47a30848bde&redirect_uri=http%3a%2f%2flong.lxxiyou.cn%2fguide&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect`);
         console.log('post code err',err)
     })
 

@@ -70,13 +70,13 @@ async function postCode(ctx, next) {
 
     let openid = tokenRes.openid;
 
+    console.log('post code openid',openid);
+
     let token = tokenRes.access_token;
 
     let infoRes = await getUserInfo(token, openid);
 
     let saveRes = await addNewUserDb(infoRes);
-
-    console.log('sql save info', saveRes);
 
     let cryptoId = aesEncrypt(openid);
 

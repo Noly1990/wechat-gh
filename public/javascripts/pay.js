@@ -15,7 +15,6 @@ function afterAuth() {
       });
   }
 }
-
 var initPage = function(nickname, headimgurl) {
   var app = new Vue({
     el: "#app",
@@ -40,13 +39,16 @@ var initPage = function(nickname, headimgurl) {
                 <label class="mint-radiolist-title">充值对象</label>
                 <mt-cell v-if="radioValue==='self'" :title="nickname">
                     <span>自己</span>
-                    <img class="icon-img" slot="icon" :src="headimgurl" width="40" height="40">
+                    <img class="icon-img-hd" slot="icon" :src="headimgurl" width="40" height="40">
                 </mt-cell>
                 <mt-field v-else label="游戏ID" placeholder="请输入游戏ID" v-model="gameid"></mt-field>
             </div>
             <div class="mint-radiolist">
-                <label class="mint-radiolist-title">充值数额（兰花￥2/个）</label>
-                <mt-field label="数额(10个起)" type="number" placeholder="请输入充值数额" v-model="paynum"></mt-field>
+                <mt-radio
+                    title="充值数额（兰花￥2/个）"
+                    v-model="radio2Value"
+                    :options="radio2Options">
+                </mt-radio>
                 <mt-cell title="订单总额">
                     <span class="text-paysum">{{paysum}}</span>
                 </mt-cell>
@@ -58,7 +60,6 @@ var initPage = function(nickname, headimgurl) {
         `,
     data: {
       gameid: "",
-      paynum: "",
       nickname,
       headimgurl,
       radioOptions: [
@@ -71,11 +72,38 @@ var initPage = function(nickname, headimgurl) {
           value: "others"
         }
       ],
-      radioValue: "self"
+      radioValue: "self",
+      radio2Options: [
+        {
+          label: "12*兰花（10送2）",
+          value: "type12"
+        },
+        {
+          label: "25*兰花（20送5）",
+          value: "type25"
+        },
+        {
+          label: "38*兰花（30送8）",
+          value: "type38"
+        }
+      ],
+      radio2Value: "type12"
     },
     computed: {
       paysum() {
-        return 2 * this.paynum;
+        let returnValue = 0;
+        switch (this.radio2Value) {
+          case "type12":
+            returnValue = 20;
+            break;
+          case "type25":
+            returnValue = 40;
+            break;
+          case "type38":
+            returnValue = 60;
+            break;
+        }
+        return returnValue;
       }
     },
     beforeMount: async function() {
@@ -96,13 +124,30 @@ var initPage = function(nickname, headimgurl) {
         if (this.radioValue === "self") {
           this.$messagebox
             .confirm(`您正在给自己充值，充值金额是${this.paysum}`)
-            .then(action => {});
+            .then(action => {
+              console.log(action);
+            })
+            .catch(err => {
+              console.log(err);
+            });
         } else {
-          this.$messagebox
-            .confirm(
-              `正在给游戏ID：${this.gameid}充值，金额为${this.paysum}，请确认`
-            )
-            .then(action => {});
+          if (this.gameid === "") {
+            this.$toast({
+              message: "请输入游戏ID",
+              duration: 3000
+            });
+          } else {
+            this.$messagebox
+              .confirm(
+                `正在给游戏ID:${this.gameid} 充值，金额为${this.paysum}，请确认`
+              )
+              .then(action => {
+                console.log(action);
+              })
+              .catch(err => {
+                console.log(err);
+              });
+          }
         }
       },
       testWXPay() {
@@ -110,36 +155,34 @@ var initPage = function(nickname, headimgurl) {
         let postData = {};
         if (this.radioValue === "self") {
           postData = {
-            payTarget: "self",
-            orderType: "optional",
+            payTarget: this.radioValue,
+            goodType: this.radio2Value,
             totalPrice: this.paysum
           };
         } else {
           postData = {
-            payTarget: "others",
-            orderType: "type10",
+            payTarget: this.radioValue,
+            goodType: this.radio2Value,
             totalPrice: this.paysum
           };
         }
-        axios
-          .post("/requestPayment",postData )
-          .then(res => {
-            console.log("requestPayment info", res.data.wxPaySignInfo);
+        axios.post("/requestPayment", postData).then(res => {
+          console.log("requestPayment info", res.data.wxPaySignInfo);
 
-            let signInfo = res.data.wxPaySignInfo;
+          let signInfo = res.data.wxPaySignInfo;
 
-            wx.chooseWXPay({
-              timestamp: signInfo.timestamp, // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
-              nonceStr: signInfo.nonceStr, // 支付签名随机串，不长于 32 位
-              package: signInfo.package, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=\*\*\*）
-              signType: signInfo.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
-              paySign: signInfo.paySign, // 支付签名
-              success: function(res) {
-                // 支付成功后的回调函数
-                console.log("支付成功");
-              }
-            });
+          wx.chooseWXPay({
+            timestamp: signInfo.timestamp, // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
+            nonceStr: signInfo.nonceStr, // 支付签名随机串，不长于 32 位
+            package: signInfo.package, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=\*\*\*）
+            signType: signInfo.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
+            paySign: signInfo.paySign, // 支付签名
+            success: function(res) {
+              // 支付成功后的回调函数
+              console.log("支付成功");
+            }
           });
+        });
       }
     }
   });

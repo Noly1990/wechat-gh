@@ -24,8 +24,8 @@ const Store = sequelize.define('order', {
         //总价
         type:Sequelize.INTEGER
     },
-    goodname:{
-        //商品名optional或者type10,20,50,100 
+    goodtype:{
+        //商品名optional或者type12,25,38 
         type:Sequelize.STRING
     },
 
