@@ -100,12 +100,13 @@ router.get('/paygreat', async (ctx, next) => {
 
 router.post('/paySuccess', async (ctx, next) => {
 
-  const json= ctx.request.body;
-  
-  console.log('--------pay success res------',json)
-  ctx.body={
-    code:1,
-    message:'接受成功'
+  const json = ctx.request.body;
+  //测试的获取用户IP
+  console.log('--------pay success res------', json)
+  ctx.body = {
+    code: 1,
+    message: '接受成功',
+    haha:ctx.req.connection.remoteAddress
   }
 })
 
