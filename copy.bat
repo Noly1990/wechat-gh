@@ -1,0 +1,1 @@
+xcopy /s /i /y /d /e \\tsclient\F\WeChat\wechat-server\server-demo C:\wechat-demo

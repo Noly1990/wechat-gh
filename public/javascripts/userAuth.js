@@ -20,7 +20,7 @@ if (code) {
             if (cryptoId) {
                 afterAuth();
             }else {
-                window.location.replace(`https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx813ae47a30848bde&redirect_uri=http%3a%2f%2flong.lxxiyou.cn%2fguide&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect`);
+                window.location.replace(`http://long.lxxiyou.cn/outhpage?aimpage=http%3a%2f%2flong.lxxiyou.cn%2fguide`);
             }
         }
 
@@ -33,7 +33,7 @@ if (code) {
     afterAuth();
 } else {
     //如果没有登陆信息，则选择强制跳转注册，到微信认证页，非微信内拒绝，然后跳转到导航页
-    window.location.replace(`https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx813ae47a30848bde&redirect_uri=http%3a%2f%2flong.lxxiyou.cn%2fguide&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect`);
+    window.location.replace(`http://long.lxxiyou.cn/outhpage?aimpage=http%3a%2f%2flong.lxxiyou.cn%2fguide`);
 
 }
 

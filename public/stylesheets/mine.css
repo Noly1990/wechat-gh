@@ -1,12 +1,13 @@
+html,body {
+    margin: 0;
+    padding: 0;
+}
+
 .user-info {
     box-sizing: border-box;
-    width: 80%;
-    height: 200px;
+    height: 230px;
     background-color: skyblue;
-    margin: 0px 10%;
-    margin-top: 60px;
-    padding: 20px;
-    border-radius: 10px;
+    border-radius: 0 0 35% 35%;
     position: relative;
 }
 
@@ -15,15 +16,16 @@
     width: 70px;
     height: 70px;
     position: absolute;
-    top: -35px;
+    top: 20px;
     left: 50%;
     transform: translateX(-50%);
     border-radius: 50%;
 }
 
 .user-id {
-    padding-top: 35px;
-    padding-bottom: 15px;
+    padding-top: 105px;
+    padding-bottom: 20px;
+    font-size: 22px;
 }
 
 .user-name {
@@ -37,6 +39,8 @@
 }
 
 .info-box {
+    width: 60%;
+    margin: 0 22%;
     display: flex;
     flex-direction: column;
 }
@@ -46,6 +50,44 @@
 
 .item-label {
     float: left;
-    width: 30%;
+    width: 50%;
     font-size: 17px;
 }
+.toggle-btn {
+    text-align: center;
+    color: rgba(0, 0, 0, 0.8);
+    font-size: 20px;
+    font-weight: bold;
+    width: 70%;
+    height: 40px;
+    margin: 0 auto;
+    margin-top: 25px; 
+    border: 2px solid rgba(0, 0, 0, 0.6);
+    border-radius: 20px;
+}
+
+.btn-text {
+    position: relative;
+    top: 5px;
+}
+
+.payed-list {
+    width: 86%;
+    margin: 0 auto;
+    margin-top: 15px;
+    background-color:  rgba(0, 0, 0, 0.6);
+    padding: 15px;
+    color: white;
+    border-radius: 10px;
+}
+
+.list-item {
+    border: 1px solid white;
+}
+
+.fade-enter-active, .fade-leave-active {
+    transition: opacity .5s;
+  }
+  .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+    opacity: 0;
+  }

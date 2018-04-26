@@ -56,7 +56,7 @@ router.all('/receivePayInfo', async ctx => {
   let xml = ctx.request.body.xml;
   const { transaction_id } = xml;
   let checkRes = await checkPayment(transaction_id);
-  console.log('receivePayInfo', checkRes)
+  console.log('-----------------checkPayment Info res-------------', checkRes)
   ctx.body = `<xml>
                 <return_code><![CDATA[SUCCESS]]></return_code>
                 <return_msg><![CDATA[OK]]></return_msg>
@@ -90,6 +90,23 @@ router.get('/mine', async (ctx, next) => {
   await ctx.render('mine', {
     title: "个人中心"
   })
+})
+router.get('/paygreat', async (ctx, next) => {
+  await ctx.render('paygreat', {
+    title: "支付成功"
+  })
+})
+
+
+router.post('/paySuccess', async (ctx, next) => {
+
+  const json= ctx.request.body;
+  
+  console.log('--------pay success res------',json)
+  ctx.body={
+    code:1,
+    message:'接受成功'
+  }
 })
 
 

@@ -29,6 +29,7 @@ var initPage = function (nickname, headimgurl, city, sex, bonus_points, gameid) 
           <div class="user-id">
             <div class="user-name">{{nickname}}</div>
           </div>
+
           <div class="info-box">
             <div class="info-item">
               <div class="item-label">游戏ID</div>
@@ -38,7 +39,19 @@ var initPage = function (nickname, headimgurl, city, sex, bonus_points, gameid) 
               <div class="item-label">用户积分</div>
               <div class="item-content">{{bonus_points}}</div>
             </div>
-          </div>
+        </div>
+        
+        <div class="toggle-btn" @click="toggleList"><span class="btn-text">历史订单</span></div>
+            <transition name="fade">
+              <div v-show="listShow" class="payed-list">
+                <div v-for="item in orderList" class="list-item">
+                    <div>{{item.goodType}}</div>
+                    <div>{{item.payTarget}}</div>
+                    <div>{{item.totalPrice}}</div>
+                    <div>{{item.payTime}}</div>
+                </div>
+              </div>
+            </transition>
         </div>
       </div>
       `,
@@ -48,10 +61,91 @@ var initPage = function (nickname, headimgurl, city, sex, bonus_points, gameid) 
       city,
       sex,
       bonus_points,
-      gameid
+      gameid,
+      listShow:false,
+      orderList:[
+        {
+          goodType:'type12',
+          totalPrice:10,
+          payTime:'2018-02-11',
+          payTarget:'self'
+        },
+        {
+          goodType:'type12',
+          totalPrice:10,
+          payTime:'2018-03-11',
+          payTarget:'100001'
+        },
+        {
+          goodType:'type38',
+          totalPrice:30,
+          payTime:'2018-03-15',
+          payTarget:'self'
+        },
+        {
+          goodType:'type25',
+          totalPrice:20,
+          payTime:'2018-04-01',
+          payTarget:'100003'
+        },
+        {
+          goodType:'type12',
+          totalPrice:10,
+          payTime:'2018-02-11',
+          payTarget:'self'
+        },
+        {
+          goodType:'type12',
+          totalPrice:10,
+          payTime:'2018-03-11',
+          payTarget:'100001'
+        },
+        {
+          goodType:'type38',
+          totalPrice:30,
+          payTime:'2018-03-15',
+          payTarget:'self'
+        },
+        {
+          goodType:'type25',
+          totalPrice:20,
+          payTime:'2018-04-01',
+          payTarget:'100003'
+        },
+        {
+          goodType:'type12',
+          totalPrice:10,
+          payTime:'2018-02-11',
+          payTarget:'self'
+        },
+        {
+          goodType:'type12',
+          totalPrice:10,
+          payTime:'2018-03-11',
+          payTarget:'100001'
+        },
+        {
+          goodType:'type38',
+          totalPrice:30,
+          payTime:'2018-03-15',
+          payTarget:'self'
+        },
+        {
+          goodType:'type25',
+          totalPrice:20,
+          payTime:'2018-04-01',
+          payTarget:'100003'
+        },
+      ]
     },
     beforeMount: async function () {
       console.log('before mount');
+    },
+    methods:{
+      toggleList(){
+        console.log('toggle')
+        this.listShow=!this.listShow;
+      }
     }
   })
 

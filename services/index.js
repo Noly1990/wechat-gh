@@ -2,7 +2,7 @@ const axios = require('axios')
 const { signMD5 } = require('../crypto/index')
 const { appid, mchid, mchKey, appsecret } = require('../danger.config')
 const { xml2json, json2xml } = require('../utils/xmlTools')
-const { signOrder, signTicket, signWXPay,signCheckPay } = require('../utils/wxKits')
+const { signOrder, signTicket, signWXPay, signCheckPay } = require('../utils/wxKits')
 
 let apiDefault = 'api.weixin.qq.com';
 let apiShangHai = 'sh.api.weixin.qq.com';
@@ -14,15 +14,23 @@ let access_token = '';
 let last_ticket_time, last_token_time;
 
 
-async function checkGameId(unionid) {
+async function checkGameIdByOpenId(openId) {
+    //openid转化成unionid，并去游戏服务器请求,默认return true
+    return true;
+
+}
+
+async function checkGameIdByGameId(gameId) {
+    //openid转化成unionid，并去游戏服务器请求,默认return true
+    return true;
 
 }
 
 //统一下单api
-async function createUnifiedOrder(openid) {
+async function createUnifiedOrder(openid, tradeNum, total_fee, body) {
     let aimUrl = `https://api.mch.weixin.qq.com/pay/unifiedorder`;
 
-    let { sign, nonce_str, tradeNum, body, total_fee } = signOrder(openid);
+    let { sign, nonce_str } = signOrder(openid, tradeNum, total_fee, body);
 
     let requsetJson = {
         appid,
@@ -57,8 +65,8 @@ async function createUnifiedOrder(openid) {
 }
 
 //统一下单后的生成pay信息的api
-async function createPayment(openid) {
-    let orderRes = await createUnifiedOrder(openid);
+async function createPayment(openid, tradeNum, total_fee, body) {
+    let orderRes = await createUnifiedOrder(openid, tradeNum, total_fee, body);
     let prepay_id = orderRes.prepay_id;
     let wxPaySignInfo = signWXPay(prepay_id);
     return wxPaySignInfo;
@@ -68,8 +76,8 @@ async function createPayment(openid) {
 //支付完成信息的订单查询api
 async function checkPayment(transaction_id) {
     let aimUrl = `https://api.mch.weixin.qq.com/pay/orderquery`;
-    let { appid,mch_id,nonce_str,sign,sign_type }=signCheckPay(transaction_id);
-    let requsetJson={
+    let { appid, mch_id, nonce_str, sign, sign_type } = signCheckPay(transaction_id);
+    let requsetJson = {
         appid,
         mch_id,
         nonce_str,
@@ -87,7 +95,7 @@ async function checkPayment(transaction_id) {
             reject(err)
         })
     })
-    console.log('checkPayment checkRes',checkRes)
+    console.log('checkPayment checkRes', checkRes)
     return checkRes;
 }
 
@@ -220,6 +228,8 @@ module.exports = {
     getUserInfo,
     checkToken,
     createPayment,
-    checkPayment
+    checkPayment,
+    checkGameIdByOpenId,
+    checkGameIdByGameId
 }
 

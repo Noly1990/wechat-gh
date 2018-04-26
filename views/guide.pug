@@ -1,23 +1,23 @@
 extends layout
 
 block append head
+  link(rel="stylesheet", href="/stylesheets/guide.css")
   script(src="https://unpkg.com/axios/dist/axios.min.js")
   script(src="/javascripts/guide.js")
   script(src="/javascripts/userAuth.js")
 
 block content
-  h1= title
-  p 欢迎来到 #{title}
-  p 请选择您需要的服务
-  ul
-    li 
-      a(href="/index") 1.签到
-    li
-      a(href="/download") 2.下载游戏
-    li
-      a(href="/pay") 3.游戏充值
-    li
-      a(href="/mine") 4.个人中心
+  div 
+    p( class="guide-title") 欢迎来到嘻游娱乐
+    ul
+      li 
+        a(href="https://www.xiyoucc.com/") 1.嘻游主页
+      li
+        a(href="/download") 2.下载游戏
+      li
+        a(href="/pay") 3.游戏充值
+      li
+        a(href="/mine") 4.个人中心
       
   
   script.

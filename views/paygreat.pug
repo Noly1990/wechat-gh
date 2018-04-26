@@ -1,0 +1,9 @@
+extends layout
+
+block append head
+  link(rel="stylesheet", href="/stylesheets/paygreat.css")
+
+block content
+  img(src="/images/paySuccess.jpg", alt="支付成功",class="success-img")
+  script.
+    console.log('这是支付成功显示界面')

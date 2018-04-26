@@ -6,31 +6,19 @@ function createNonceStr() {
     return randomStr;
 };
 
-function generateTradeNumber() {
-    let tradeNumber = 'XYTrade' + createTimestamp();
-    return tradeNumber;
-}
-
 function createTimestamp() {
     return parseInt(new Date().getTime() / 1000) + '';
 };
 
 
-function signOrder(openid) {
+function signOrder(openid,tradeNum,total_fee,body) {
     let nonce_str = createNonceStr();
-    let tradeNum = generateTradeNumber();
-    let body = '嘻游娱乐-兰花充值';
-    let total_fee = 1;
     let stringA = `appid=${appid}&body=${body}&device_info=WEB&mch_id=${mchid}&nonce_str=${nonce_str}&notify_url=http://long.lxxiyou.cn/receivePayInfo&openid=${openid}&out_trade_no=${tradeNum}&sign_type=MD5&spbill_create_ip=115.211.127.161&total_fee=${total_fee}&trade_type=JSAPI`
     let stringSignTemp = stringA + `&key=${mchKey}`;
     let sign = signMD5(stringSignTemp).toUpperCase();
     return {
         sign,
-        nonce_str,
-        tradeNum,
-        body,
-        openid,
-        total_fee
+        nonce_str
     }
 }
 

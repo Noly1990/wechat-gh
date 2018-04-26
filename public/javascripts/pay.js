@@ -5,10 +5,13 @@ function afterAuth() {
     axios
       .get("/getUserStatus")
       .then(res => {
-        let { userInfo } = res.data;
-        let { nickname, headimgurl, city, sex, openid } = userInfo;
-        initPage(nickname, headimgurl);
-        console.log("openid", openid);
+        if (res.data.code > 0) {
+          let { userInfo } = res.data;
+          let { nickname, headimgurl, city, sex, openid } = userInfo;
+          initPage(nickname, headimgurl);
+        } else {
+          window.location.replace(`http://long.lxxiyou.cn/outhpage?aimpage=http%3a%2f%2flong.lxxiyou.cn%2fguide`);
+        }
       })
       .catch(err => {
         console.log("getUserStatus", err);
@@ -160,59 +163,87 @@ var initPage = function (nickname, headimgurl) {
               duration: 3000
             });
           } else {
-            this.$messagebox
-              .confirm(
-                `正在给游戏ID:${this.gameid} 充值，金额为${this.paysum}，请确认`
-              )
-              .then(action => {
-                console.log(action);
-                let postData = {
-                  payTarget: this.radioValue,
-                  goodType: this.radio2Value,
-                  totalPrice: this.paysum
-                };
-
-                axios.post("/requestPayment", postData).then(res => {
-                  console.log("requestPayment info", res.data.wxPaySignInfo);
-                  let signInfo = res.data.wxPaySignInfo;
-                  wx.chooseWXPay({
-                    timestamp: signInfo.timestamp, // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
-                    nonceStr: signInfo.nonceStr, // 支付签名随机串，不长于 32 位
-                    package: signInfo.package, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=\*\*\*）
-                    signType: signInfo.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
-                    paySign: signInfo.paySign, // 支付签名
-                    success: function (res) {
-                      // 支付成功后的回调函数
-                      console.log("支付成功");
-                    }
-                  });
-                });
-              })
-              .catch(err => {
-                console.log(err);
+            if (isNaN(this.gameid)) {
+              this.$toast({
+                message: "请输入正确的游戏ID",
+                duration: 3000
               });
+            } else {
+
+
+              this.$messagebox
+                .confirm(
+                  `正在给游戏ID:${this.gameid} 充值，金额为${this.paysum}，请确认`
+                )
+                .then(action => {
+                  console.log(action);
+                  let postData = {
+                    payTarget: this.radioValue,
+                    gameId: this.gameid,
+                    goodType: this.radio2Value,
+                    totalPrice: this.paysum
+                  };
+
+                  axios.post("/requestPayment", postData).then(res => {
+                    console.log("requestPayment info", res.data.wxPaySignInfo);
+                    let signInfo = res.data.wxPaySignInfo;
+                    wx.chooseWXPay({
+                      timestamp: signInfo.timestamp, // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
+                      nonceStr: signInfo.nonceStr, // 支付签名随机串，不长于 32 位
+                      package: signInfo.package, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=\*\*\*）
+                      signType: signInfo.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
+                      paySign: signInfo.paySign, // 支付签名
+                      success: function (res) {
+                        // 支付成功后的回调函数
+                        console.log("-------------支付成功------------".res);
+                        
+                        axios.post(`/paySuccess`,{
+                          payRes:res
+                        }).then(data=>{console.log(data)})
+                      }
+                    });
+                  });
+                })
+                .catch(err => {
+                  console.log(err);
+                });
+
+
+
+
+
+            }
+
           }
         }
       },
       testWXPay() {
         //type10 20 50 100 optional
         let postData = {
-            payTarget: this.radioValue,
-            goodType: this.radio2Value,
-            totalPrice: this.paysum
+          payTarget: this.radioValue,
+          goodType: this.radio2Value,
+          totalPrice: 10
         }
         axios.post("/requestPayment", postData).then(res => {
           console.log("requestPayment info", res.data.wxPaySignInfo);
           let signInfo = res.data.wxPaySignInfo;
+          let preTradeNo = res.data.preTradeNo
           wx.chooseWXPay({
             timestamp: signInfo.timestamp, // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
             nonceStr: signInfo.nonceStr, // 支付签名随机串，不长于 32 位
             package: signInfo.package, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=\*\*\*）
             signType: signInfo.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
             paySign: signInfo.paySign, // 支付签名
-            success: function (res) {
+            success: function (resData) {
+
               // 支付成功后的回调函数
-              console.log("支付成功");
+              console.log("-------------支付成功------------".resData);
+                        
+              axios.post(`/paySuccess`,{
+                payRes:resData,
+                preTradeNo
+              }).then(data=>{console.log(data)})
+              window.location.href='http://long.lxxiyou.cn/paygreat'
             }
           });
         });
@@ -220,6 +251,8 @@ var initPage = function (nickname, headimgurl) {
     }
   });
 };
+
+
 
 function testCookies() {
   console.log("test cookies");

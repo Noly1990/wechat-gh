@@ -1,21 +1,20 @@
-const fs = require('fs');
-const { checkDailyAttendanceDb,findUserDb,falseDailyAttendanceDb ,addBonusDb,addLikeSumDb,getLikeSumDb} = require('../db/operate')
-
+const { checkDailyAttendanceDb, findUserDb, falseDailyAttendanceDb, addBonusDb, addLikeSumDb, getLikeSumDb } = require('../db/operate')
+const {autoReply,replyForSubscribe}=require('../config/ways.config')
 function answerText(xmlObj) {
     const { ToUserName, FromUserName, CreateTime, MsgType, Content, MsgId } = xmlObj;
     if (MsgType !== 'text') return {
         error: 'error'
     };
-    const replyJson = JSON.parse(fs.readFileSync('./config/autoreply.json'))
-    const replyArr=replyJson.textReply;
-    let replyContent='';
-    replyArr.forEach(function(item){
-        if(item.keyword===Content) {
-            replyContent=item.replyContent;
+    const replyObj = autoReply;
+    const replyArr = replyObj.textReply;
+    let replyContent = '';
+    replyArr.forEach(function (item) {
+        if (item.keyword === Content) {
+            replyContent = item.replyContent;
         }
     });
-    if (replyContent==='') {
-        replyContent=replyJson.default.replyContent;
+    if (replyContent === '') {
+        replyContent = replyObj.default.replyContent;
     }
     let time = new Date().getTime() / 1000;
     return {
@@ -27,17 +26,6 @@ function answerText(xmlObj) {
     }
 }
 //上述要设置一个数据库项，来配置多样的自动文本回复功能
-
-answerText(
-    {
-        ToUserName: 'gh_b2778b857448',
-        FromUserName: 'oWbV21cjRc8jKG_LcEdw8u490iWM',
-        CreateTime: '1523258781',
-        MsgType: 'text',
-        Content: '1',
-        MsgId: '6542346648163874691'
-    }
-);
 
 async function answerEvent(xmlObj) {
     const { ToUserName, FromUserName, CreateTime, MsgType, Event, EventKey } = xmlObj;
@@ -53,7 +41,7 @@ async function answerEvent(xmlObj) {
                 FromUserName: ToUserName,
                 CreateTime: time,
                 MsgType: 'text',
-                Content: `感谢您关注我们公众号`
+                Content: replyForSubscribe.content
             }
             break;
         // 响应取消订阅
@@ -83,8 +71,8 @@ async function answerEvent(xmlObj) {
                     break;
                 case 'V1001_GOOD':
 
-                    let addLikeRes=await addLikeSumDb();
-                    let allLikeSum=await getLikeSumDb();
+                    let addLikeRes = await addLikeSumDb();
+                    let allLikeSum = await getLikeSumDb();
                     return {
                         ToUserName: FromUserName,
                         FromUserName: ToUserName,
@@ -95,11 +83,11 @@ async function answerEvent(xmlObj) {
                     break;
                 case 'Attendance':
                     if (await findUserDb(FromUserName)) {
-                        let daily_attendance=await checkDailyAttendanceDb(FromUserName);
+                        let daily_attendance = await checkDailyAttendanceDb(FromUserName);
                         if (daily_attendance) {
-                            let falseRes=await falseDailyAttendanceDb(FromUserName);
-                            let addRes=await addBonusDb(FromUserName,10);
-                            console.log('falseRes',falseRes);
+                            let falseRes = await falseDailyAttendanceDb(FromUserName);
+                            let addRes = await addBonusDb(FromUserName, 10);
+                            console.log('falseRes', falseRes);
                             return {
                                 ToUserName: FromUserName,
                                 FromUserName: ToUserName,
@@ -107,7 +95,7 @@ async function answerEvent(xmlObj) {
                                 MsgType: 'text',
                                 Content: `每日签到-您已签到-积分加10`
                             }
-                        }else {
+                        } else {
                             return {
                                 ToUserName: FromUserName,
                                 FromUserName: ToUserName,
@@ -116,7 +104,7 @@ async function answerEvent(xmlObj) {
                                 Content: `每日签到-您今日已签到-请明天再来`
                             }
                         }
-                    }else {
+                    } else {
                         return {
                             ToUserName: FromUserName,
                             FromUserName: ToUserName,
@@ -125,11 +113,8 @@ async function answerEvent(xmlObj) {
                             Content: `每日签到-请先去自主服务-个人中心登录`
                         }
                     }
-                    
-                    
-                    break;
 
-                     
+                    break;
                 default:
                     return {
                         ToUserName: FromUserName,
