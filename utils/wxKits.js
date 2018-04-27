@@ -2,7 +2,7 @@ const { signMD5, signSha1 } = require('./wxCrypto')
 const { appid, mchid, mchKey, token } = require('../danger.config')
 
 function createNonceStr() {
-    let randomStr=Math.random().toString(36).substr(2)+Math.random().toString(36).substr(2);
+    let randomStr = Math.random().toString(36).substr(2) + Math.random().toString(36).substr(2);
     return randomStr;
 };
 
@@ -11,9 +11,9 @@ function createTimestamp() {
 };
 
 
-function signOrder(openid,tradeNum,total_fee,body) {
+function signOrder(openid, tradeNum, total_fee, body, userIp, attach) {
     let nonce_str = createNonceStr();
-    let stringA = `appid=${appid}&body=${body}&device_info=WEB&mch_id=${mchid}&nonce_str=${nonce_str}&notify_url=http://long.lxxiyou.cn/receivePayInfo&openid=${openid}&out_trade_no=${tradeNum}&sign_type=MD5&spbill_create_ip=115.211.127.161&total_fee=${total_fee}&trade_type=JSAPI`
+    let stringA = `appid=${appid}&attach=${attach}&body=${body}&device_info=WEB&mch_id=${mchid}&nonce_str=${nonce_str}&notify_url=http://long.lxxiyou.cn/receivePayInfo&openid=${openid}&out_trade_no=${tradeNum}&sign_type=MD5&spbill_create_ip=${userIp}&total_fee=${total_fee}&trade_type=JSAPI`
     let stringSignTemp = stringA + `&key=${mchKey}`;
     let sign = signMD5(stringSignTemp).toUpperCase();
     return {
@@ -21,7 +21,6 @@ function signOrder(openid,tradeNum,total_fee,body) {
         nonce_str
     }
 }
-
 
 function signWXPay(prepay_id) {
     let nonceStr = createNonceStr();
@@ -43,16 +42,15 @@ function signWXPay(prepay_id) {
 
 function signCheckPay(transaction_id) {
     let nonce_str = createNonceStr();
-    let sign_type="MD5";
-    let stringA=`appid=${appid}&mch_id=${mchid}&nonce_str=${nonce_str}&sign_type=${sign_type}&transaction_id=${transaction_id}`
+    let sign_type = "MD5";
+    let stringA = `appid=${appid}&mch_id=${mchid}&nonce_str=${nonce_str}&transaction_id=${transaction_id}`
     let stringSignTemp = stringA + `&key=${mchKey}`;
     let sign = signMD5(stringSignTemp).toUpperCase();
     return {
         appid,
-        mch_id:mchid,
+        mch_id: mchid,
         nonce_str,
-        sign,
-        sign_type
+        sign
     }
 }
 
@@ -72,6 +70,8 @@ function raw(args) {
     string = string.substr(1);
     return string;
 };
+
+
 
 
 function signTicket(jsapi_ticket, url) {

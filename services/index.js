@@ -27,13 +27,14 @@ async function checkGameIdByGameId(gameId) {
 }
 
 //统一下单api
-async function createUnifiedOrder(openid, tradeNum, total_fee, body) {
+async function createUnifiedOrder(openid, tradeNum, total_fee, body, userIp,attach) {
     let aimUrl = `https://api.mch.weixin.qq.com/pay/unifiedorder`;
 
-    let { sign, nonce_str } = signOrder(openid, tradeNum, total_fee, body);
+    let { sign, nonce_str } = signOrder(openid, tradeNum, total_fee, body,userIp,attach);
 
     let requsetJson = {
         appid,
+        attach,
         mch_id: mchid,
         device_info: 'WEB',
         nonce_str,
@@ -44,7 +45,7 @@ async function createUnifiedOrder(openid, tradeNum, total_fee, body) {
         out_trade_no: tradeNum,
         total_fee,
         notify_url: 'http://long.lxxiyou.cn/receivePayInfo',
-        spbill_create_ip: '115.211.127.161',
+        spbill_create_ip: userIp,
         trade_type: 'JSAPI'
     }
 
@@ -65,8 +66,8 @@ async function createUnifiedOrder(openid, tradeNum, total_fee, body) {
 }
 
 //统一下单后的生成pay信息的api
-async function createPayment(openid, tradeNum, total_fee, body) {
-    let orderRes = await createUnifiedOrder(openid, tradeNum, total_fee, body);
+async function createPayment(openid, tradeNum, total_fee, body, userIp,attach) {
+    let orderRes = await createUnifiedOrder(openid, tradeNum, total_fee, body, userIp,attach);
     let prepay_id = orderRes.prepay_id;
     let wxPaySignInfo = signWXPay(prepay_id);
     return wxPaySignInfo;
@@ -76,14 +77,13 @@ async function createPayment(openid, tradeNum, total_fee, body) {
 //支付完成信息的订单查询api
 async function checkPayment(transaction_id) {
     let aimUrl = `https://api.mch.weixin.qq.com/pay/orderquery`;
-    let { appid, mch_id, nonce_str, sign, sign_type } = signCheckPay(transaction_id);
+    let { appid, mch_id, nonce_str, sign } = signCheckPay(transaction_id);
     let requsetJson = {
         appid,
         mch_id,
         nonce_str,
         transaction_id,
-        sign,
-        sign_type
+        sign
     }
     let requestXML = json2xml(requsetJson);
     let checkRes = await new Promise(function (resolve, reject) {
@@ -95,7 +95,7 @@ async function checkPayment(transaction_id) {
             reject(err)
         })
     })
-    console.log('checkPayment checkRes', checkRes)
+    console.log('-----------------------checkPayment checkRes--------------------------', checkRes)
     return checkRes;
 }
 

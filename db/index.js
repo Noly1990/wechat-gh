@@ -31,7 +31,7 @@ class MySql {
                 console.error('Unable to connect to the database:', err);
             });
     }
-    init() {
+    dangerInit() {
 
         const User = require('./model/user');
         const Store = require('./model/store')
@@ -54,9 +54,7 @@ class MySql {
                 dataNumberValue: 0
             }).then(res => {console.log('add like sum') }).catch(err => { console.log(err) })
         }).catch(err => { console.log(err) });
-        
-
-       
+          
     }
 }
 

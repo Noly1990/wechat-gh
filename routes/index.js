@@ -31,7 +31,15 @@ router.get('/testcookies', async (ctx, next) => {
 })
 
 
+const { log } = require('../utils/logger')
+
+
 router.get('/index', async (ctx, next) => {
+  let test = {
+    a: 11,
+    b: `fkjbakjfjabjfbajibf`
+  }
+  log.info(test)
   await ctx.render('index', {
     title: "测试主页"
   })
@@ -50,13 +58,13 @@ router.get('/guide', async (ctx, next) => {
   })
 })
 
+const { payLog } = require('../utils/logger')
 
-router.all('/receivePayInfo', async ctx => {
-  console.log('receivePayInfo', ctx.request.body.xml)
+router.post('/receivePayInfo', async ctx => {
   let xml = ctx.request.body.xml;
   const { transaction_id } = xml;
   let checkRes = await checkPayment(transaction_id);
-  console.log('-----------------checkPayment Info res-------------', checkRes)
+  payLog.info('check payment res',checkRes);
   ctx.body = `<xml>
                 <return_code><![CDATA[SUCCESS]]></return_code>
                 <return_msg><![CDATA[OK]]></return_msg>
@@ -99,14 +107,11 @@ router.get('/paygreat', async (ctx, next) => {
 
 
 router.post('/paySuccess', async (ctx, next) => {
-
   const json = ctx.request.body;
-  //测试的获取用户IP
   console.log('--------pay success res------', json)
   ctx.body = {
     code: 1,
-    message: '接受成功',
-    haha:ctx.req.connection.remoteAddress
+    message: '接受成功'
   }
 })
 

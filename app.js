@@ -9,27 +9,29 @@ const logger = require('koa-logger')
 const index = require('./routes/index')
 const users = require('./routes/users')
 const xmlParser = require('koa-xml-body')
-const mysql=require('./db')
+const mysql = require('./db')
 // error handler
-onerror(app)
+onerror(app);
 
+
+//数据库连接和初始化,运行中请慎用初始化
 mysql.connect();
-mysql.init();
+mysql.dangerInit();
 
 // middlewares
 app.use(xmlParser({
   encoding: 'utf8', // lib will detect it from `content-type` 
   xmlOptions: {
-      explicitArray: false
+    explicitArray: false
   },
   onerror: (err, ctx) => {
-      ctx.throw(err.status, err.message);
+    ctx.throw(err.status, err.message);
   }
 }
 ))
 
 app.use(bodyparser({
-  enableTypes:['json', 'form', 'text']
+  enableTypes: ['json', 'form', 'text']
 }))
 app.use(json())
 app.use(logger())
