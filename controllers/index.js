@@ -26,24 +26,11 @@ async function purePost(ctx, next) {
     switch (MsgType) {
         case 'text':
             let jsonText = answerText(xml);
-            let aimXML;
-            if (jsonText) {
-                aimXML = json2xml(jsonText);
-            } else {
-                aimXML = jsonText;
-            }
-            ctx.body = aimXML;
-            break;
+            ctx.body = jsonText ? json2xml(jsonText) : jsonText;
             break;
         case 'event':
             let jsonEvent = await answerEvent(xml);
-            let eventXML;
-            if (jsonEvent) {
-                eventXML = json2xml(jsonEvent);
-            } else {
-                eventXML = jsonEvent;
-            }
-            ctx.body = eventXML;
+            ctx.body = jsonEvent ? json2xml(jsonEvent) : jsonEvent;
             break;
         case 'location':
             const { Location_X, Location_Y } = xml;
@@ -156,50 +143,56 @@ async function getSig(ctx, next) {
 async function requestPayment(ctx, next) {
 
     let cryptoId = ctx.cookies.get('cryptoId');
+    
+    if (cryptoId) {
+        let openId = aesDecrypt(cryptoId);
 
-    let openId = aesDecrypt(cryptoId);
+        let payInfo = ctx.request.body;
 
-    let payInfo = ctx.request.body;
+        let userIp = ctx.req.connection.remoteAddress.substr(7);
+        console.log('---------------User IP-----------------------', userIp, '----------------------User IP----------------------')
 
-    let userIp = ctx.req.connection.remoteAddress.substr(7);
-    console.log('---------------User IP-----------------------', userIp, '----------------------User IP----------------------')
+        //客户端IP签名验证
+        let reg = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/ig;
+        if (!reg.test(userIp)) {
+            userIp = '115.211.127.161'
+        }
+        if (checkPayInfo(payInfo, openId)) {
+            console.log('支付数据检测成功')
 
-    //客户端IP签名验证
-    let reg = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/ig;
-    if (!reg.test(userIp)) {
-        userIp = '115.211.127.161'
-    }
-    if (checkPayInfo(payInfo, openId)) {
-        console.log('支付数据检测成功')
+            //生成订单号，并通过订单号
+            let tradeNo = generateTradeNo();
+            console.log('------------生成的trade-no为--------------', tradeNo)
 
-        //生成订单号，并通过订单号
-        let tradeNo = generateTradeNo();
-        console.log('------------生成的trade-no为--------------', tradeNo)
+            let tradebody = '嘻游娱乐-兰花充值';
 
-        let tradebody = '嘻游娱乐-兰花充值';
+            console.log('-----------------支付金额-------------------', payInfo.totalPrice)
+            let total_fee = payInfo.totalPrice / 10;
 
-        console.log('-----------------支付金额-------------------', payInfo.totalPrice)
-        let total_fee = payInfo.totalPrice / 10;
+            console.log('requestPayment payinfo', payInfo)
 
-        console.log('requestPayment payinfo', payInfo)
+            let attach = 'gameid=10101010'
 
-        let attach='gameid=10101010'
+            let wxPaySignInfo = await createPayment(openId, tradeNo, total_fee, tradebody, userIp, attach);
 
-        let wxPaySignInfo = await createPayment(openId, tradeNo, total_fee, tradebody, userIp,attach);
-
-        ctx.body = {
-            code: 1,
-            message: 'generateUnifiedOrder',
-            wxPaySignInfo,
-            preTradeNo: tradeNo
+            ctx.body = {
+                code: 1,
+                message: 'generateUnifiedOrder',
+                wxPaySignInfo,
+                preTradeNo: tradeNo
+            }
+        } else {
+            ctx.body = {
+                code: -1,
+                message: 'payInfo error'
+            }
         }
     } else {
         ctx.body = {
             code: -1,
-            message: 'payInfo error'
+            message: 'others error'
         }
     }
-
 
 }
 
