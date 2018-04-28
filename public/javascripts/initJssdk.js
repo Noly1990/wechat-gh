@@ -1,4 +1,3 @@
-
 function initSdk(){
     let url = window.location.href.split('#')[0];
     console.log('post url', url)
@@ -6,7 +5,6 @@ function initSdk(){
         url
     }).then(res => {
         let sigInfo = res.data;
-        console.log('浏览器 signInfo', sigInfo)
         wx.config({
             debug: false, 
             appId: sigInfo.appid, 
@@ -15,11 +13,6 @@ function initSdk(){
             signature: sigInfo.signature,
             jsApiList: [
                 'checkJsApi',
-                'onMenuShareTimeline',
-                'onMenuShareAppMessage',
-                'onMenuShareQQ',
-                'onMenuShareWeibo',
-                'hideMenuItems',
                 'chooseImage',
                 'chooseWXPay'
             ] 
@@ -28,19 +21,4 @@ function initSdk(){
     }).catch(err => {
         console.log(err)
     })
-}
-
-
-
-function chooseImg() {
-    console.log('can choose img')
-    wx.chooseImage({
-        count: 1, 
-        sizeType: ['original', 'compressed'],
-        sourceType: ['album', 'camera'], 
-        success: function (res) {
-            var localIds = res.localIds; 
-            console.log(res)
-        }
-    });
 }

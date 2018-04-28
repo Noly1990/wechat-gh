@@ -35,11 +35,6 @@
             "sub_button": [
                 {
                     "type": "view",
-                    "name": "搜搜搜索",
-                    "url": "http://www.soso.com/"
-                },
-                {
-                    "type": "view",
                     "name": "个人中心",
                     "url": "http://long.lxxiyou.cn/outhpage?aimpage=http%3a%2f%2flong.lxxiyou.cn%2fmine"
                 }

@@ -163,7 +163,6 @@ async function exchangeAuthToken(code) {
     let aimUrl = `https://api.weixin.qq.com/sns/oauth2/access_token?appid=${appid}&secret=${appsecret}&code=${code}&grant_type=authorization_code`;
     let tokenRes = await new Promise(function (resolve, reject) {
         axios.get(aimUrl).then(res => {
-            console.log('get Auth token res', res.data);
             resolve(res)
         }).catch(err => {
             console.log('get Auth token err', err);

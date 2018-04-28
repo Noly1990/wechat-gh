@@ -105,6 +105,21 @@ router.get('/paygreat', async (ctx, next) => {
   })
 })
 
+const {setButtons}=require('../utils/setGHbuttons')
+
+router.get('/setGHbuttons',async (ctx,next) =>{
+  const {adminSecret}=ctx.query;
+  console.log('---------------------有人尝试更改公众号按钮------------------------');
+  if (adminSecret==="buttonMiMa") {
+    console.log('---------------------更改公众号按钮成功------------------------');
+    await setButtons();
+    ctx.body='配置按钮成功'
+  }else {
+    console.log('---------------------更改公众号按钮失败------------------------');
+    ctx.body="鉴权失败"
+  }
+})
+
 
 router.post('/paySuccess', async (ctx, next) => {
   const json = ctx.request.body;

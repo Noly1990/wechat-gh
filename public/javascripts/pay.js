@@ -79,15 +79,18 @@ var initPage = function (nickname, headimgurl) {
       radio2Options: [
         {
           label: "12*兰花（10送2）",
-          value: "type12"
+          value: "type12",
+          price:20
         },
         {
           label: "25*兰花（20送5）",
-          value: "type25"
+          value: "type25",
+          price:40
         },
         {
           label: "38*兰花（30送8）",
-          value: "type38"
+          value: "type38",
+          price:60
         }
       ],
       radio2Value: "type12"

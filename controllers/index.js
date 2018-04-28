@@ -61,7 +61,6 @@ async function purePost(ctx, next) {
             }
             break;
     }
-    console.log('xml', xml)
 }
 
 
@@ -89,8 +88,6 @@ async function postCode(ctx, next) {
             overwrite: false,
             httpOnly: false
         });
-
-        console.log('infoRes', infoRes);
 
         ctx.body = {
             code: 1,
@@ -144,16 +141,13 @@ async function getUserStatus(ctx, next) {
 async function getSig(ctx, next) {
 
     let { url } = ctx.request.body;
-    console.log('sig-url', url)
 
     let sigInfo = await signatureSdk(url);
-
-    console.log('sigInfo', sigInfo)
 
     Object.assign(sigInfo, {
         appid
     })
-    console.log('server side sign info')
+
     ctx.body = sigInfo;
 
 }
@@ -170,7 +164,7 @@ async function requestPayment(ctx, next) {
     let userIp = ctx.req.connection.remoteAddress.substr(7);
     console.log('---------------User IP-----------------------', userIp, '----------------------User IP----------------------')
 
-    //客户端IP签名
+    //客户端IP签名验证
     let reg = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/ig;
     if (!reg.test(userIp)) {
         userIp = '115.211.127.161'
