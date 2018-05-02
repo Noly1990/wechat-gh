@@ -60,6 +60,8 @@ router.get('/guide', async (ctx, next) => {
 
 const { payLog } = require('../utils/logger')
 
+
+//准备把支付成功的回调地址迁移
 router.post('/receivePayInfo', async ctx => {
   let xml = ctx.request.body.xml;
   const { transaction_id } = xml;
