@@ -44,7 +44,7 @@ var initPage = function (nickname, headimgurl) {
                     <span>自己</span>
                     <img class="icon-img-hd" slot="icon" :src="headimgurl" width="40" height="40">
                 </mt-cell>
-                <mt-field v-else label="游戏ID" placeholder="请输入游戏ID" v-model="gameid"></mt-field>
+                <mt-field v-else label="游戏ID" placeholder="请输入游戏ID" v-model="userid"></mt-field>
             </div>
             <div class="mint-radiolist">
                 <mt-radio
@@ -56,13 +56,12 @@ var initPage = function (nickname, headimgurl) {
                     <span class="text-paysum">{{paysum}}</span>
                 </mt-cell>
                 <mt-button @click.native="handlePay" class="pay-btn" type="primary">确认支付</mt-button>
-                <mt-button @click.native="testWXPay" class="pay-btn" type="primary">测试微信支付</mt-button>
             </div>
 
         </div>
         `,
     data: {
-      gameid: "",
+      userid: "",
       nickname,
       headimgurl,
       radioOptions: [
@@ -79,33 +78,33 @@ var initPage = function (nickname, headimgurl) {
       radio2Options: [
         {
           label: "12*兰花（10送2）",
-          value: "type12",
+          value: "ghtype12",
           price:20
         },
         {
           label: "25*兰花（20送5）",
-          value: "type25",
+          value: "ghtype25",
           price:40
         },
         {
           label: "38*兰花（30送8）",
-          value: "type38",
+          value: "ghtype38",
           price:60
         }
       ],
-      radio2Value: "type12"
+      radio2Value: "ghtype12"
     },
     computed: {
       paysum() {
         let returnValue = 0;
         switch (this.radio2Value) {
-          case "type12":
+          case "ghtype12":
             returnValue = 20;
             break;
-          case "type25":
+          case "ghtype25":
             returnValue = 40;
             break;
-          case "type38":
+          case "ghtype38":
             returnValue = 60;
             break;
         }
@@ -150,6 +149,7 @@ var initPage = function (nickname, headimgurl) {
                   success: function (res) {
                     // 支付成功后的回调函数
                     console.log("支付成功");
+                    window.location.href='http://long.lxxiyou.cn/paygreat'
                   }
                 });
               });
@@ -160,29 +160,27 @@ var initPage = function (nickname, headimgurl) {
               console.log(err);
             });
         } else {
-          if (this.gameid === "") {
+          if (this.userid === "") {
             this.$toast({
               message: "请输入游戏ID",
               duration: 3000
             });
           } else {
-            if (isNaN(this.gameid)) {
+            if (isNaN(this.userid)) {
               this.$toast({
                 message: "请输入正确的游戏ID",
                 duration: 3000
               });
             } else {
-
-
               this.$messagebox
                 .confirm(
-                  `正在给游戏ID:${this.gameid} 充值，金额为${this.paysum}，请确认`
+                  `正在给游戏ID:${this.userid} 充值，金额为${this.paysum}，请确认`
                 )
                 .then(action => {
                   console.log(action);
                   let postData = {
                     payTarget: this.radioValue,
-                    gameId: this.gameid,
+                    userId: this.userid,
                     goodType: this.radio2Value,
                     totalPrice: this.paysum
                   };
@@ -199,7 +197,7 @@ var initPage = function (nickname, headimgurl) {
                       success: function (res) {
                         // 支付成功后的回调函数
                         console.log("-------------支付成功------------".res);
-                        
+                        window.location.href='http://long.lxxiyou.cn/paygreat'
                         axios.post(`/paySuccess`,{
                           payRes:res
                         }).then(data=>{console.log(data)})
@@ -219,37 +217,6 @@ var initPage = function (nickname, headimgurl) {
 
           }
         }
-      },
-      testWXPay() {
-        //type10 20 50 100 optional
-        let postData = {
-          payTarget: this.radioValue,
-          goodType: this.radio2Value,
-          totalPrice: 10
-        }
-        axios.post("/requestPayment", postData).then(res => {
-          console.log("requestPayment info", res.data.wxPaySignInfo);
-          let signInfo = res.data.wxPaySignInfo;
-          let preTradeNo = res.data.preTradeNo
-          wx.chooseWXPay({
-            timestamp: signInfo.timestamp, // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
-            nonceStr: signInfo.nonceStr, // 支付签名随机串，不长于 32 位
-            package: signInfo.package, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=\*\*\*）
-            signType: signInfo.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
-            paySign: signInfo.paySign, // 支付签名
-            success: function (resData) {
-
-              // 支付成功后的回调函数
-              console.log("-------------支付成功------------".resData);
-                        
-              axios.post(`/paySuccess`,{
-                payRes:resData,
-                preTradeNo
-              }).then(data=>{console.log(data)})
-              window.location.href='http://long.lxxiyou.cn/paygreat'
-            }
-          });
-        });
       }
     }
   });

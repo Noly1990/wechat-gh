@@ -7,18 +7,17 @@ function afterAuth() {
 
       let { userInfo } = res.data;
 
-      let { nickname, headimgurl, city, sex, openid, bonus_points, gameid } = userInfo;
+      let { nickname, headimgurl, city, sex, openid, bonus_points, userid } = userInfo;
       console.log('客户端 userinfo', userInfo)
-      initPage(nickname, headimgurl, city, sex, bonus_points, gameid);
+      initPage(nickname, headimgurl, city, sex, bonus_points, userid);
       console.log('openid', openid)
     }).catch(err => {
       console.log('getUserStatus', err)
     })
   }
-
 }
 
-var initPage = function (nickname, headimgurl, city, sex, bonus_points, gameid) {
+var initPage = function (nickname, headimgurl, city, sex, bonus_points, userid) {
   var app = new Vue({
     el: '#app',
     template: `
@@ -33,7 +32,7 @@ var initPage = function (nickname, headimgurl, city, sex, bonus_points, gameid) 
           <div class="info-box">
             <div class="info-item">
               <div class="item-label">游戏ID</div>
-              <div class="item-content">{{gameid?gameid:'未登陆过游戏'}}</div>
+              <div class="item-content">{{userid?userid:'未登陆过游戏'}}</div>
             </div>
             <div class="info-item">
               <div class="item-label">用户积分</div>
@@ -61,7 +60,7 @@ var initPage = function (nickname, headimgurl, city, sex, bonus_points, gameid) 
       city,
       sex,
       bonus_points,
-      gameid,
+      userid,
       listShow:false,
       orderList:[
         {
@@ -150,7 +149,6 @@ var initPage = function (nickname, headimgurl, city, sex, bonus_points, gameid) 
   })
 
 }
-
 
 function testCookies() {
   console.log('test cookies')

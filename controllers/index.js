@@ -1,5 +1,5 @@
 const { answerText, answerEvent } = require('../utils/answer')
-const { exchangeAuthToken, getUserInfo, signatureSdk, createPayment, checkGameIdByOpenId, checkGameIdByGameId } = require('../services')
+const { exchangeAuthToken, getUserInfo, signatureSdk, createPayment, checkUserIdByOpenId, checkUserIdRemote } = require('../services')
 
 const { appid } = require('../danger.config');
 
@@ -97,7 +97,7 @@ async function getUserStatus(ctx, next) {
     if (findRes) {
         let { dataValues } = findRes;
 
-        const { nickname, headimgurl, city, sex, bonus_points, gameid } = dataValues;
+        const { nickname, headimgurl, city, sex, bonus_points, userid } = dataValues;
 
         let userInfo = {
             openid,
@@ -106,7 +106,7 @@ async function getUserStatus(ctx, next) {
             city,
             sex,
             bonus_points,
-            gameid
+            userid
         };
 
         ctx.body = {
@@ -143,7 +143,7 @@ async function getSig(ctx, next) {
 async function requestPayment(ctx, next) {
 
     let cryptoId = ctx.cookies.get('cryptoId');
-    
+
     if (cryptoId) {
         let openId = aesDecrypt(cryptoId);
 
@@ -171,7 +171,17 @@ async function requestPayment(ctx, next) {
 
             console.log('requestPayment payinfo', payInfo)
 
-            let attach = 'gameid=10101010'
+            //attach要带上userid unionid 和goodtype,现改为userid,userid要么是数字要么是self
+
+            //做openid到unionid的转换,默认有openid就有unionid
+            let findRes = await findUserDb(openId);
+
+            let { dataValues } = findRes;
+
+            const { unionid } = dataValues;
+
+            let userid = payInfo.payTarget === "self" ? "self" : payInfo.userId;
+            let attach = `userid=${userid}&unionid=${unionid}&goodtype=${payInfo.goodType}`
 
             let wxPaySignInfo = await createPayment(openId, tradeNo, total_fee, tradebody, userIp, attach);
 
@@ -199,7 +209,7 @@ async function requestPayment(ctx, next) {
 
 //对前端的支付请求信息进行验证
 async function checkPayInfo(payInfo, openId) {
-    const goodTypeArr = ['type12', 'type25', 'type38'];
+    const goodTypeArr = ['ghtype12', 'ghtype25', 'ghtype38'];
     const priceObj = {
         type12: 20,
         type25: 40,
@@ -213,12 +223,12 @@ async function checkPayInfo(payInfo, openId) {
 
     if (payTarget === 'self') {
         //检测该openid及unionid是否注册过游戏ID
-        let checkGameIdRes = await checkGameIdByOpenId(openId);
-        if (!checkGameIdRes) return false
+        let checkUserIdRes = await checkUserIdByOpenId(openId);
+        if (!checkUserIdRes) return false
     } else if (payTarget === 'others') {
-        const { gameId } = payInfo;
-        let checkGameIdRes = await checkGameIdByGameId(gameId);
-        if (!checkGameIdRes) return false
+        const { userId } = payInfo;
+        let checkUserIdRes = await checkUserIdRemote(userId);
+        if (!checkUserIdRes) return false
     }
 
     return true;
@@ -226,8 +236,8 @@ async function checkPayInfo(payInfo, openId) {
 
 
 
-async function checkGameId(ctx, next) {
-    // checkGameIdByGameId
+async function checkUserId(ctx, next) {
+    //checkUserIdremote
     ctx.body = {
         code: -1,
         message: '用户不存在'
@@ -242,5 +252,5 @@ module.exports = {
     getSig,
     getUserStatus,
     requestPayment,
-    checkGameId
+    checkUserId
 }

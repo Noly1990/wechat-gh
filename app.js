@@ -7,7 +7,7 @@ const bodyparser = require('koa-bodyparser')
 const logger = require('koa-logger')
 
 const index = require('./routes/index')
-const users = require('./routes/users')
+
 const xmlParser = require('koa-xml-body')
 const mysql = require('./db')
 // error handler

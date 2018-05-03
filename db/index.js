@@ -35,15 +35,9 @@ class MySql {
 
         const User = require('./model/user');
         const Store = require('./model/store')
-        const Order =require('./model/order')
 
         User.sync({ force: true }).then(() => {
             console.log('User init success!')
-            // Table created
-        }).catch(err => { console.log(err) });
-
-        Order.sync({ force: true }).then(() => {
-            console.log('Order init success!')
             // Table created
         }).catch(err => { console.log(err) });
 

@@ -11,9 +11,9 @@ function createTimestamp() {
 };
 
 
-function signOrder(openid, tradeNum, total_fee, body, userIp, attach) {
+function signOrder(openid, tradeNum, total_fee, body, userIp, attach,notify_url) {
     let nonce_str = createNonceStr();
-    let stringA = `appid=${appid}&attach=${attach}&body=${body}&device_info=WEB&mch_id=${mchid}&nonce_str=${nonce_str}&notify_url=http://long.lxxiyou.cn/receivePayInfo&openid=${openid}&out_trade_no=${tradeNum}&sign_type=MD5&spbill_create_ip=${userIp}&total_fee=${total_fee}&trade_type=JSAPI`
+    let stringA = `appid=${appid}&attach=${attach}&body=${body}&device_info=WEB&mch_id=${mchid}&nonce_str=${nonce_str}&notify_url=${notify_url}&openid=${openid}&out_trade_no=${tradeNum}&sign_type=MD5&spbill_create_ip=${userIp}&total_fee=${total_fee}&trade_type=JSAPI`
     let stringSignTemp = stringA + `&key=${mchKey}`;
     let sign = signMD5(stringSignTemp).toUpperCase();
     return {

@@ -20,7 +20,7 @@ const { aesDecrypt, aesEncrypt } = require('../crypto')
 
 const { checkPayment } = require('../services/index')
 
-router.get('/checkGameId', indexControl.checkGameId)
+router.get('/checkUserId', indexControl.checkUserId)
 
 router.get('/testcookies', async (ctx, next) => {
   let cryptoId = ctx.cookies.get('cryptoId');
@@ -66,7 +66,7 @@ router.post('/receivePayInfo', async ctx => {
   let xml = ctx.request.body.xml;
   const { transaction_id } = xml;
   let checkRes = await checkPayment(transaction_id);
-  payLog.info('check payment res',checkRes);
+  payLog.info('check payment res', checkRes);
   ctx.body = `<xml>
                 <return_code><![CDATA[SUCCESS]]></return_code>
                 <return_msg><![CDATA[OK]]></return_msg>
@@ -107,18 +107,18 @@ router.get('/paygreat', async (ctx, next) => {
   })
 })
 
-const {setButtons}=require('../utils/setGHbuttons')
+const { setButtons } = require('../utils/setGHbuttons')
 
-router.get('/setGHbuttons',async (ctx,next) =>{
-  const {adminSecret}=ctx.query;
+router.get('/setGHbuttons', async (ctx, next) => {
+  const { adminSecret } = ctx.query;
   console.log('---------------------有人尝试更改公众号按钮------------------------');
-  if (adminSecret==="buttonMiMa") {
+  if (adminSecret === "buttonMiMa") {
     console.log('---------------------更改公众号按钮成功------------------------');
     await setButtons();
-    ctx.body='配置按钮成功'
-  }else {
+    ctx.body = '配置按钮成功'
+  } else {
     console.log('---------------------更改公众号按钮失败------------------------');
-    ctx.body="鉴权失败"
+    ctx.body = "鉴权失败"
   }
 })
 
