@@ -50,6 +50,24 @@ class MySql {
         }).catch(err => { console.log(err) });
           
     }
+    weakInit(){
+        const User = require('./model/user');
+        const Store = require('./model/store')
+        User.sync().then(() => {
+            console.log('User init success!')
+            // Table created
+        }).catch(err => { console.log(err) });
+        Store.sync().then(async () => {
+            console.log('Store init success!');
+            let findRes= await Store.findOne({where:{dataName:'like_sum'}});
+            if (!findRes) {
+                Store.create({
+                    dataName: 'like_sum',
+                    dataNumberValue: 0
+                }).then(res => {console.log('add like sum') }).catch(err => { console.log(err) })
+            }
+        }).catch(err => { console.log(err) });
+    }
 }
 
 const mysql = new MySql();

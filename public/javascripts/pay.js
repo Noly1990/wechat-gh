@@ -209,10 +209,6 @@ var initPage = function (nickname, headimgurl) {
                   console.log(err);
                 });
 
-
-
-
-
             }
 
           }
@@ -222,14 +218,6 @@ var initPage = function (nickname, headimgurl) {
   });
 };
 
-
-
-function testCookies() {
-  console.log("test cookies");
-  axios.get("/testcookies").then(res => {
-    console.log(res);
-  });
-}
 //设置cookie
 function setCookie(cname, cvalue, exdays) {
   var d = new Date();

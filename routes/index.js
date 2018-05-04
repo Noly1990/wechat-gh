@@ -35,11 +35,6 @@ const { log } = require('../utils/logger')
 
 
 router.get('/index', async (ctx, next) => {
-  let test = {
-    a: 11,
-    b: `fkjbakjfjabjfbajibf`
-  }
-  log.info(test)
   await ctx.render('index', {
     title: "测试主页"
   })
@@ -97,6 +92,9 @@ router.get('/download', async (ctx, next) => {
 })
 
 router.get('/mine', async (ctx, next) => {
+  
+
+
   await ctx.render('mine', {
     title: "个人中心"
   })
@@ -119,16 +117,6 @@ router.get('/setGHbuttons', async (ctx, next) => {
   } else {
     console.log('---------------------更改公众号按钮失败------------------------');
     ctx.body = "鉴权失败"
-  }
-})
-
-
-router.post('/paySuccess', async (ctx, next) => {
-  const json = ctx.request.body;
-  console.log('--------pay success res------', json)
-  ctx.body = {
-    code: 1,
-    message: '接受成功'
   }
 })
 

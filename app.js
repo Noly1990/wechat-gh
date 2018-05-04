@@ -16,7 +16,7 @@ onerror(app);
 
 //数据库连接和初始化,运行中请慎用初始化
 mysql.connect();
-mysql.dangerInit();
+mysql.weakInit();
 
 // middlewares
 app.use(xmlParser({

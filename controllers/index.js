@@ -65,6 +65,7 @@ async function postCode(ctx, next) {
 
         let infoRes = await getUserInfo(token, openid);
 
+        //待数据库稳定之后，加入用户检测，已存在的不再增加
         let saveRes = await addNewUserDb(infoRes);
 
         let cryptoId = aesEncrypt(openid);
@@ -157,7 +158,7 @@ async function requestPayment(ctx, next) {
         if (!reg.test(userIp)) {
             userIp = '115.211.127.161'
         }
-        if (checkPayInfo(payInfo, openId)) {
+        if (await checkPayInfo(payInfo, openId)) {
             console.log('支付数据检测成功')
 
             //生成订单号，并通过订单号
@@ -166,7 +167,6 @@ async function requestPayment(ctx, next) {
 
             let tradebody = '嘻游娱乐-兰花充值';
 
-            console.log('-----------------支付金额-------------------', payInfo.totalPrice)
             let total_fee = payInfo.totalPrice / 10;
 
             console.log('requestPayment payinfo', payInfo)
@@ -188,8 +188,7 @@ async function requestPayment(ctx, next) {
             ctx.body = {
                 code: 1,
                 message: 'generateUnifiedOrder',
-                wxPaySignInfo,
-                preTradeNo: tradeNo
+                wxPaySignInfo
             }
         } else {
             ctx.body = {
@@ -209,23 +208,26 @@ async function requestPayment(ctx, next) {
 
 //对前端的支付请求信息进行验证
 async function checkPayInfo(payInfo, openId) {
+    console.log('--------------------begin check',payInfo,'pay info------------------------------')
     const goodTypeArr = ['ghtype12', 'ghtype25', 'ghtype38'];
     const priceObj = {
-        type12: 20,
-        type25: 40,
-        type38: 60
+        ghtype12: 20,
+        ghtype25: 40,
+        ghtype38: 60
     }
 
     const { payTarget, goodType, totalPrice } = payInfo;
-
     if (goodTypeArr.indexOf(goodType) < 0) return false;
     if (priceObj[goodType] !== totalPrice) return false;
-
     if (payTarget === 'self') {
         //检测该openid及unionid是否注册过游戏ID
+        
         let checkUserIdRes = await checkUserIdByOpenId(openId);
-        if (!checkUserIdRes) return false
+        console.log("check self res",checkUserIdRes)
+        if (!checkUserIdRes) return false;
+
     } else if (payTarget === 'others') {
+        
         const { userId } = payInfo;
         let checkUserIdRes = await checkUserIdRemote(userId);
         if (!checkUserIdRes) return false

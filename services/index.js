@@ -1,8 +1,9 @@
 const axios = require('axios')
 const { signMD5 } = require('../crypto/index')
-const { appid, mchid, mchKey, appsecret } = require('../danger.config')
+const { appid, mchid, mchKey, appsecret, serverBridge } = require('../danger.config')
 const { xml2json, json2xml } = require('../utils/xmlTools')
 const { signOrder, signTicket, signWXPay, signCheckPay } = require('../utils/wxKits')
+const { findUserDb } = require('../db/operate')
 
 let apiDefault = 'api.weixin.qq.com';
 let apiShangHai = 'sh.api.weixin.qq.com';
@@ -18,20 +19,40 @@ let last_ticket_time, last_token_time, last_jwt_time;
 
 async function checkUserIdByOpenId(openId) {
     //openid转化成unionid，并去游戏服务器请求,默认return true
-    return true;
+    let findRes = await findUserDb(openId);
+    let { dataValues } = findRes;
+    const { unionid } = dataValues;
+    let aimUrl = `${serverBridge}/exchangeUserID`;
+    let checkRes = await axios.post(aimUrl, {
+        unionid
+    }).catch(err => {
+        console.log(err)
+    });
+    if (!checkRes) return false;
+    return checkRes.data.code > 0 ? true : false;
+}
 
+async function exchangeUserId(openId) {
+    //先检测本地数据库是否存在userid，不存在，则去远端请求并更新本地数据库，这里处于安全考虑，不拿来做充值的依据
+
+    
 }
 
 async function checkUserIdRemote(userId) {
     //检测userid是否存在，并去游戏服务器请求,默认return true
-    return true;
+    let aimUrl = `${serverBridge}/checkUserID?userid=${userId}`;
+    let checkRes = await axios.get(aimUrl).catch(err => {
+        console.log(err)
+    });
+    if (!checkRes) return false;
+    return checkRes.data.code > 0 ? true : false;
 
 }
 
 //统一下单api
 async function createUnifiedOrder(openid, tradeNum, total_fee, body, userIp, attach) {
     let aimUrl = `https://api.mch.weixin.qq.com/pay/unifiedorder`;
-    let notify_url = 'http://115.212.245.83:5555/payInfoReceiver';
+    let notify_url = 'http://test.lxxiyou.cn:5555/payInfoReceiver';
     let { sign, nonce_str } = signOrder(openid, tradeNum, total_fee, body, userIp, attach, notify_url);
 
     let requsetJson = {
