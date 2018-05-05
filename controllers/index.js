@@ -237,6 +237,13 @@ async function checkPayInfo(payInfo, openId) {
 }
 
 
+async function getOrders(ctx, next){
+    let cryptoId = ctx.cookies.get('cryptoId');
+    if (cryptoId) {
+        let openId = aesDecrypt(cryptoId);
+    }
+}
+
 
 async function checkUserId(ctx, next) {
     //checkUserIdremote
@@ -254,5 +261,6 @@ module.exports = {
     getSig,
     getUserStatus,
     requestPayment,
-    checkUserId
+    checkUserId,
+    getOrders
 }

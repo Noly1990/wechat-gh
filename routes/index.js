@@ -12,6 +12,8 @@ router.post('/', checkSig, indexControl.purePost)
 
 router.get('/getUserStatus', indexControl.getUserStatus)
 
+router.get('/getOrders',indexControl.getOrders)
+
 router.post('/postCode', indexControl.postCode)
 
 router.post('/getSig', indexControl.getSig)
