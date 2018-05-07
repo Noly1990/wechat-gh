@@ -1,4 +1,5 @@
 const axios = require('axios')
+axios.defaults.timeout = 1000;
 const {
     signMD5
 } = require('../crypto/index')
@@ -33,6 +34,7 @@ let access_token = '';
 let jwt_auth_token = '';
 
 let last_ticket_time, last_token_time, last_jwt_time;
+
 
 
 async function checkUserIdByOpenId(openId) {
@@ -287,7 +289,15 @@ async function getWechatOrders(unionId) {
     }).catch(err => {
         console.log("getWechatOrders() services", err)
     })
-    return ordersRes.data
+    if (ordersRes) {
+        return ordersRes.data
+    }else {
+        return {
+            code:-1,
+            message:"bridge server error"
+        }
+    }
+
 }
 
 module.exports = {

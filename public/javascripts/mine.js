@@ -77,7 +77,7 @@ var initPage = function (nickname, headimgurl, city, sex, bonus_points, userid) 
       bonus_points,
       userid,
       listShow: false,
-
+      ordersList:[]
     },
     beforeMount: async function () {
       console.log('before mount');
