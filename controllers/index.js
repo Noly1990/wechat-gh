@@ -1,26 +1,57 @@
-const { answerText, answerEvent } = require('../utils/answer')
-const { exchangeAuthToken, getUserInfo, signatureSdk, createPayment, checkUserIdByOpenId, checkUserIdRemote } = require('../services')
+const {
+    answerText,
+    answerEvent
+} = require('../utils/answer')
+const {
+    exchangeOpenToUnion,
+    exchangeAuthToken,
+    getUserInfo,
+    signatureSdk,
+    createPayment,
+    checkUserIdByOpenId,
+    checkUserIdRemote,
+    getWechatOrders
+} = require('../services')
 
-const { appid } = require('../danger.config');
+const {
+    appid
+} = require('../danger.config');
 
-const { addNewUserDb, findUserDb } = require('../db/operate')
+const {
+    addNewUserDb,
+    findUserDb
+} = require('../db/operate')
 
-const { aesDecrypt, aesEncrypt } = require('../crypto')
+const {
+    aesDecrypt,
+    aesEncrypt
+} = require('../crypto')
 
-const { xml2json, json2xml } = require('../utils/xmlTools')
+const {
+    xml2json,
+    json2xml
+} = require('../utils/xmlTools')
 
-const { generateTradeNo } = require('../utils/tradeTools')
+const {
+    generateTradeNo
+} = require('../utils/tradeTools')
 
 async function pureGet(ctx, next) {
-    const { echostr } = ctx.query;
+    const {
+        echostr
+    } = ctx.query;
     ctx.body = echostr + '';
 }
 
 
 async function purePost(ctx, next) {
-    const { openid } = ctx.query;
+    const {
+        openid
+    } = ctx.query;
     let xml = ctx.request.body.xml;
-    const { MsgType } = xml;
+    const {
+        MsgType
+    } = xml;
 
     console.log('MsgType', MsgType)
     switch (MsgType) {
@@ -33,7 +64,10 @@ async function purePost(ctx, next) {
             ctx.body = jsonEvent ? json2xml(jsonEvent) : jsonEvent;
             break;
         case 'location':
-            const { Location_X, Location_Y } = xml;
+            const {
+                Location_X,
+                Location_Y
+            } = xml;
             ctx.body = {
                 code: 1,
                 message: 'this is location message',
@@ -72,7 +106,7 @@ async function postCode(ctx, next) {
 
         ctx.cookies.set('cryptoId', cryptoId, {
             domain: 'long.lxxiyou.cn',
-            maxAge: 6 * 60 * 60 * 1000,//6小时的cookie的过期时间
+            maxAge: 6 * 60 * 60 * 1000, //6小时的cookie的过期时间
             overwrite: false,
             httpOnly: false
         });
@@ -96,9 +130,18 @@ async function getUserStatus(ctx, next) {
     let openid = aesDecrypt(cryptoId);
     let findRes = await findUserDb(openid);
     if (findRes) {
-        let { dataValues } = findRes;
+        let {
+            dataValues
+        } = findRes;
 
-        const { nickname, headimgurl, city, sex, bonus_points, userid } = dataValues;
+        const {
+            nickname,
+            headimgurl,
+            city,
+            sex,
+            bonus_points,
+            userid
+        } = dataValues;
 
         let userInfo = {
             openid,
@@ -128,7 +171,9 @@ async function getUserStatus(ctx, next) {
 
 async function getSig(ctx, next) {
 
-    let { url } = ctx.request.body;
+    let {
+        url
+    } = ctx.request.body;
 
     let sigInfo = await signatureSdk(url);
 
@@ -174,11 +219,8 @@ async function requestPayment(ctx, next) {
             //attach要带上userid unionid 和goodtype,现改为userid,userid要么是数字要么是self
 
             //做openid到unionid的转换,默认有openid就有unionid
-            let findRes = await findUserDb(openId);
 
-            let { dataValues } = findRes;
-
-            const { unionid } = dataValues;
+            let unionid = await exchangeOpenToUnion(openId);
 
             let userid = payInfo.payTarget === "self" ? "self" : payInfo.userId;
             let attach = `userid=${userid}&unionid=${unionid}&goodtype=${payInfo.goodType}`
@@ -208,7 +250,7 @@ async function requestPayment(ctx, next) {
 
 //对前端的支付请求信息进行验证
 async function checkPayInfo(payInfo, openId) {
-    console.log('--------------------begin check',payInfo,'pay info------------------------------')
+    console.log('--------------------begin check', payInfo, 'pay info------------------------------')
     const goodTypeArr = ['ghtype12', 'ghtype25', 'ghtype38'];
     const priceObj = {
         ghtype12: 20,
@@ -216,19 +258,25 @@ async function checkPayInfo(payInfo, openId) {
         ghtype38: 60
     }
 
-    const { payTarget, goodType, totalPrice } = payInfo;
+    const {
+        payTarget,
+        goodType,
+        totalPrice
+    } = payInfo;
     if (goodTypeArr.indexOf(goodType) < 0) return false;
     if (priceObj[goodType] !== totalPrice) return false;
     if (payTarget === 'self') {
         //检测该openid及unionid是否注册过游戏ID
-        
+
         let checkUserIdRes = await checkUserIdByOpenId(openId);
-        console.log("check self res",checkUserIdRes)
+        console.log("check self res", checkUserIdRes)
         if (!checkUserIdRes) return false;
 
     } else if (payTarget === 'others') {
-        
-        const { userId } = payInfo;
+
+        const {
+            userId
+        } = payInfo;
         let checkUserIdRes = await checkUserIdRemote(userId);
         if (!checkUserIdRes) return false
     }
@@ -237,11 +285,31 @@ async function checkPayInfo(payInfo, openId) {
 }
 
 
-async function getOrders(ctx, next){
+async function getOrders(ctx, next) {
     let cryptoId = ctx.cookies.get('cryptoId');
     if (cryptoId) {
         let openId = aesDecrypt(cryptoId);
+        let unionid = await exchangeOpenToUnion(openId);
+        let ordersRes=await getWechatOrders(unionid);
+        if (ordersRes.code>0) {
+            ctx.body={
+                code:1,
+                ordersList:ordersRes.ordersList
+            }
+        }else {
+            ctx.body={
+                code:-1,
+                message:ordersRes.message
+            }
+        }
+        
+    } else {
+        ctx.body = {
+            code: -1,
+            message: "no cryptoId"
+        }
     }
+
 }
 
 

@@ -1,13 +1,22 @@
-
 function afterAuth() {
   let cookie = document.cookie;
   let cryptoId = getCookie(cookie, 'cryptoId');
   if (cryptoId) {
     axios.get('/getUserStatus').then(res => {
 
-      let { userInfo } = res.data;
+      let {
+        userInfo
+      } = res.data;
 
-      let { nickname, headimgurl, city, sex, openid, bonus_points, userid } = userInfo;
+      let {
+        nickname,
+        headimgurl,
+        city,
+        sex,
+        openid,
+        bonus_points,
+        userid
+      } = userInfo;
       console.log('客户端 userinfo', userInfo)
       initPage(nickname, headimgurl, city, sex, bonus_points, userid);
       console.log('openid', openid)
@@ -42,12 +51,18 @@ var initPage = function (nickname, headimgurl, city, sex, bonus_points, userid) 
         
         <div class="toggle-btn" @click="toggleList"><span class="btn-text">历史订单</span></div>
             <transition name="fade">
-              <div v-show="listShow" class="payed-list">
-                <div v-for="item in orderList" class="list-item">
-                    <div>{{item.goodType}}</div>
-                    <div>{{item.payTarget}}</div>
-                    <div>{{item.totalPrice}}</div>
-                    <div>{{item.payTime}}</div>
+              <div v-if="listShow" class="payed-list">
+                <div v-for="item in ordersList" class="list-item">
+                    <div class="order-id">订单号：{{item.OrderID}}</div>
+                    <div class="order-type">
+                      <div>通过{{item.TradeType}}{{item.Remark}}充值</div>
+                      <div>到账游戏ID：{{item.UserID}}</div>
+                    </div>
+                    <div class="order-fee">
+                      <div>{{item.GoodType}}</div>
+                      <div class="order-amount">金额：{{item.TotalAmount}}</div>
+                    </div>
+                    <div class="order-time">{{item.OrderTime}}</div>
                 </div>
               </div>
             </transition>
@@ -61,98 +76,71 @@ var initPage = function (nickname, headimgurl, city, sex, bonus_points, userid) 
       sex,
       bonus_points,
       userid,
-      listShow:false,
-      orderList:[
-        {
-          goodType:'type12',
-          totalPrice:10,
-          payTime:'2018-02-11',
-          payTarget:'self'
-        },
-        {
-          goodType:'type12',
-          totalPrice:10,
-          payTime:'2018-03-11',
-          payTarget:'100001'
-        },
-        {
-          goodType:'type38',
-          totalPrice:30,
-          payTime:'2018-03-15',
-          payTarget:'self'
-        },
-        {
-          goodType:'type25',
-          totalPrice:20,
-          payTime:'2018-04-01',
-          payTarget:'100003'
-        },
-        {
-          goodType:'type12',
-          totalPrice:10,
-          payTime:'2018-02-11',
-          payTarget:'self'
-        },
-        {
-          goodType:'type12',
-          totalPrice:10,
-          payTime:'2018-03-11',
-          payTarget:'100001'
-        },
-        {
-          goodType:'type38',
-          totalPrice:30,
-          payTime:'2018-03-15',
-          payTarget:'self'
-        },
-        {
-          goodType:'type25',
-          totalPrice:20,
-          payTime:'2018-04-01',
-          payTarget:'100003'
-        },
-        {
-          goodType:'type12',
-          totalPrice:10,
-          payTime:'2018-02-11',
-          payTarget:'self'
-        },
-        {
-          goodType:'type12',
-          totalPrice:10,
-          payTime:'2018-03-11',
-          payTarget:'100001'
-        },
-        {
-          goodType:'type38',
-          totalPrice:30,
-          payTime:'2018-03-15',
-          payTarget:'self'
-        },
-        {
-          goodType:'type25',
-          totalPrice:20,
-          payTime:'2018-04-01',
-          payTarget:'100003'
-        },
-      ]
+      listShow: false,
+
     },
     beforeMount: async function () {
       console.log('before mount');
+      axios.get('/getOrders').then(res => {
+        if (res.data.code > 0) {
+          this.ordersList = formatOrder(res.data.ordersList)
+
+        } else {
+          this.ordersList = []
+        }
+      })
     },
-    methods:{
-      toggleList(){
+    methods: {
+      toggleList() {
         console.log('toggle')
-        this.listShow=!this.listShow;
+        console.log('ordersList', this.ordersList)
+        this.listShow = !this.listShow;
       }
     }
   })
 
 }
 
+function formatOrder(ordersList) {
+  const goodType = {
+    ghtype12: {
+      label: "12*兰花（10送2）",
+      value: "ghtype12",
+      price: 20
+    },
+    ghtype25: {
+      label: "25*兰花（20送5）",
+      value: "ghtype25",
+      price: 40
+    },
+    ghtype38:{
+      label: "38*兰花（30送8）",
+      value: "ghtype38",
+      price: 60
+    }
+  }
+  let tempArr = []
+  for (var i = 0; i < ordersList.length; i++) {
+    let tempItem = {};
+    tempItem.TradeType = ordersList[i].TradeType === 'JSAPI' ? "公众号" : "APP微信";
+    tempItem.Remark = ordersList[i].Remark === 'self' ? "给自己" : "给他人";
+    tempItem.TotalAmount = ordersList[i].TotalAmount / 100;
+    let str = ordersList[i].OrderTime;
+    tempItem.OrderTime = `${str.substr(0,4)}-${str.substr(4,2)}-${str.substr(6,2)} ${str.substr(8,2)}:${str.substr(10,2)}`
+    tempItem.OrderID = ordersList[i].OrderID;
+    tempItem.GoodType = goodType[ordersList[i].GoodType].label;
+    tempItem.UserID = ordersList[i].UserID;
+    tempArr.push(tempItem)
+  }
+  return tempArr;
+}
+
+
 function testCookies() {
   console.log('test cookies')
-  axios.get('/testcookies').then(res => { console.log(res) })
+  axios.get('/testcookies').then(res => {
+    console.log(res)
+  })
 }
 
 
@@ -177,4 +165,4 @@ function getCookie(cookie, cname) {
 //清除cookie 
 function clearCookie(name) {
   setCookie(name, "", -1);
-} 
+}

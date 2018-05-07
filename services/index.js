@@ -1,9 +1,27 @@
 const axios = require('axios')
-const { signMD5 } = require('../crypto/index')
-const { appid, mchid, mchKey, appsecret, serverBridge } = require('../danger.config')
-const { xml2json, json2xml } = require('../utils/xmlTools')
-const { signOrder, signTicket, signWXPay, signCheckPay } = require('../utils/wxKits')
-const { findUserDb } = require('../db/operate')
+const {
+    signMD5
+} = require('../crypto/index')
+const {
+    appid,
+    mchid,
+    mchKey,
+    appsecret,
+    serverBridge
+} = require('../danger.config')
+const {
+    xml2json,
+    json2xml
+} = require('../utils/xmlTools')
+const {
+    signOrder,
+    signTicket,
+    signWXPay,
+    signCheckPay
+} = require('../utils/wxKits')
+const {
+    findUserDb
+} = require('../db/operate')
 
 let apiDefault = 'api.weixin.qq.com';
 let apiShangHai = 'sh.api.weixin.qq.com';
@@ -20,8 +38,12 @@ let last_ticket_time, last_token_time, last_jwt_time;
 async function checkUserIdByOpenId(openId) {
     //openid转化成unionid，并去游戏服务器请求,默认return true
     let findRes = await findUserDb(openId);
-    let { dataValues } = findRes;
-    const { unionid } = dataValues;
+    let {
+        dataValues
+    } = findRes;
+    const {
+        unionid
+    } = dataValues;
     let aimUrl = `${serverBridge}/exchangeUserID`;
     let checkRes = await axios.post(aimUrl, {
         unionid
@@ -35,7 +57,7 @@ async function checkUserIdByOpenId(openId) {
 async function exchangeUserId(openId) {
     //先检测本地数据库是否存在userid，不存在，则去远端请求并更新本地数据库，这里处于安全考虑，不拿来做充值的依据
 
-    
+
 }
 
 async function checkUserIdRemote(userId) {
@@ -53,7 +75,10 @@ async function checkUserIdRemote(userId) {
 async function createUnifiedOrder(openid, tradeNum, total_fee, body, userIp, attach) {
     let aimUrl = `https://api.mch.weixin.qq.com/pay/unifiedorder`;
     let notify_url = 'http://test.lxxiyou.cn:5555/payInfoReceiver';
-    let { sign, nonce_str } = signOrder(openid, tradeNum, total_fee, body, userIp, attach, notify_url);
+    let {
+        sign,
+        nonce_str
+    } = signOrder(openid, tradeNum, total_fee, body, userIp, attach, notify_url);
 
     let requsetJson = {
         appid,
@@ -100,7 +125,12 @@ async function createPayment(openid, tradeNum, total_fee, body, userIp, attach) 
 //支付完成信息的订单查询api
 async function checkPayment(transaction_id) {
     let aimUrl = `https://api.mch.weixin.qq.com/pay/orderquery`;
-    let { appid, mch_id, nonce_str, sign } = signCheckPay(transaction_id);
+    let {
+        appid,
+        mch_id,
+        nonce_str,
+        sign
+    } = signCheckPay(transaction_id);
     let requsetJson = {
         appid,
         mch_id,
@@ -237,9 +267,28 @@ async function refreshToken(r_token, openid) {
     return refreshRes.data
 }
 
+async function exchangeOpenToUnion(openId) {
+    let findRes = await findUserDb(openId);
 
+    let {
+        dataValues
+    } = findRes;
 
+    return dataValues.unionid
+}
 
+async function getWechatOrders(unionId) {
+    const {
+        serverBridge
+    } = require('../danger.config')
+    let aimUrl = `${serverBridge}/getOrdersByUnion`;
+    let ordersRes = await axios.post(aimUrl, {
+        unionid: unionId
+    }).catch(err => {
+        console.log("getWechatOrders() services", err)
+    })
+    return ordersRes.data
+}
 
 module.exports = {
     createUnifiedOrder,
@@ -252,6 +301,7 @@ module.exports = {
     createPayment,
     checkPayment,
     checkUserIdByOpenId,
-    checkUserIdRemote
+    checkUserIdRemote,
+    exchangeOpenToUnion,
+    getWechatOrders
 }
-
