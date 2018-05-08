@@ -6,8 +6,16 @@ function afterAuth() {
       .get("/getUserStatus")
       .then(res => {
         if (res.data.code > 0) {
-          let { userInfo } = res.data;
-          let { nickname, headimgurl, city, sex, openid } = userInfo;
+          let {
+            userInfo
+          } = res.data;
+          let {
+            nickname,
+            headimgurl,
+            city,
+            sex,
+            openid
+          } = userInfo;
           initPage(nickname, headimgurl);
         } else {
           window.location.replace(`http://long.lxxiyou.cn/outhpage?aimpage=http%3a%2f%2flong.lxxiyou.cn%2fguide`);
@@ -64,8 +72,7 @@ var initPage = function (nickname, headimgurl) {
       userid: "",
       nickname,
       headimgurl,
-      radioOptions: [
-        {
+      radioOptions: [{
           label: "给自己充值",
           value: "self"
         },
@@ -75,21 +82,20 @@ var initPage = function (nickname, headimgurl) {
         }
       ],
       radioValue: "self",
-      radio2Options: [
-        {
+      radio2Options: [{
           label: "12*兰花（10送2）",
           value: "ghtype12",
-          price:20
+          price: 20
         },
         {
           label: "25*兰花（20送5）",
           value: "ghtype25",
-          price:40
+          price: 40
         },
         {
           label: "38*兰花（30送8）",
           value: "ghtype38",
-          price:60
+          price: 60
         }
       ],
       radio2Value: "ghtype12"
@@ -130,28 +136,36 @@ var initPage = function (nickname, headimgurl) {
           this.$messagebox
             .confirm(`您正在给自己充值，充值金额是${this.paysum}`)
             .then(action => {
-              console.log(action);
+
               let postData = {
                 payTarget: this.radioValue,
                 goodType: this.radio2Value,
                 totalPrice: this.paysum
               };
-
+              var that = this;
               axios.post("/requestPayment", postData).then(res => {
-                console.log("requestPayment info", res.data.wxPaySignInfo);
+
                 let signInfo = res.data.wxPaySignInfo;
-                wx.chooseWXPay({
-                  timestamp: signInfo.timestamp, // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
-                  nonceStr: signInfo.nonceStr, // 支付签名随机串，不长于 32 位
-                  package: signInfo.package, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=\*\*\*）
-                  signType: signInfo.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
-                  paySign: signInfo.paySign, // 支付签名
-                  success: function (res) {
-                    // 支付成功后的回调函数
-                    console.log("支付成功");
-                    window.location.href='http://long.lxxiyou.cn/paygreat'
-                  }
-                });
+
+                if (res.data.code > 0) {
+                  wx.chooseWXPay({
+                    timestamp: signInfo.timestamp, // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
+                    nonceStr: signInfo.nonceStr, // 支付签名随机串，不长于 32 位
+                    package: signInfo.package, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=\*\*\*）
+                    signType: signInfo.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
+                    paySign: signInfo.paySign, // 支付签名
+                    success: function (res) {
+                      // 支付成功后的回调函数
+                      console.log("支付成功");
+                      window.location.href = 'http://long.lxxiyou.cn/paygreat'
+                    }
+                  });
+                } else {
+                  that.$toast({
+                    message: "您还未登陆过游戏，请先用微信登陆一次游戏",
+                    duration: 3000
+                  });
+                }
               });
 
 
@@ -177,33 +191,40 @@ var initPage = function (nickname, headimgurl) {
                   `正在给游戏ID:${this.userid} 充值，金额为${this.paysum}，请确认`
                 )
                 .then(action => {
-                  console.log(action);
                   let postData = {
                     payTarget: this.radioValue,
                     userId: this.userid,
                     goodType: this.radio2Value,
                     totalPrice: this.paysum
                   };
+                  var that = this;
 
                   axios.post("/requestPayment", postData).then(res => {
-                    console.log("requestPayment info", res.data.wxPaySignInfo);
+
                     let signInfo = res.data.wxPaySignInfo;
-                    wx.chooseWXPay({
-                      timestamp: signInfo.timestamp, // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
-                      nonceStr: signInfo.nonceStr, // 支付签名随机串，不长于 32 位
-                      package: signInfo.package, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=\*\*\*）
-                      signType: signInfo.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
-                      paySign: signInfo.paySign, // 支付签名
-                      success: function (res) {
-                        // 支付成功后的回调函数
-                        console.log("-------------支付成功------------".res);
-                        window.location.href='http://long.lxxiyou.cn/paygreat'
-                        axios.post(`/paySuccess`,{
-                          payRes:res
-                        }).then(data=>{console.log(data)})
-                      }
-                    });
+                    if (res.data.code > 0) {
+                      wx.chooseWXPay({
+                        timestamp: signInfo.timestamp, // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
+                        nonceStr: signInfo.nonceStr, // 支付签名随机串，不长于 32 位
+                        package: signInfo.package, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=\*\*\*）
+                        signType: signInfo.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
+                        paySign: signInfo.paySign, // 支付签名
+                        success: function (res) {
+                          // 支付成功后的回调函数
+                          console.log("-------------支付成功------------".res);
+                          window.location.href = 'http://long.lxxiyou.cn/paygreat'
+                        }
+                      });
+                    } else {
+                      that.$toast({
+                        message: "您输入的游戏ID查证后有误",
+                        duration: 3000
+                      });
+                    }
                   });
+
+
+
                 })
                 .catch(err => {
                   console.log(err);

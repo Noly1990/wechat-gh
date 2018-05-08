@@ -1,5 +1,5 @@
 const axios = require('axios')
-axios.defaults.timeout = 1000;
+axios.defaults.timeout = 1500;
 const {
     signMD5
 } = require('../crypto/index')
@@ -35,6 +35,44 @@ let jwt_auth_token = '';
 
 let last_ticket_time, last_token_time, last_jwt_time;
 
+let axiosWithAuth = {
+    axios: undefined,
+    bridge_token: '',
+    tokenTime: undefined,
+    buildTime:undefined,
+    refreshToken: async function () {
+        let loginRes = await axios.post(`${serverBridge}/registerToken`, {
+            userSecret: "Hdhak7Gdas7pl8Jsgv5RrsIk"
+        }).catch(err => {
+            console.error("axiosWithAuth refreshToken error", err)
+        })
+        this.bridge_token= loginRes.data.jwtoken;
+        this.tokenTime = new Date().getTime() / 1000;
+        console.error("axiosWithAuth refreshToken bridge_token", this.bridge_token);
+    },
+    axiosBuilder: function () {
+        let nowTime = new Date().getTime() / 1000;
+        if (!this.buildTime||this.buildTime + 3600 * 10 < nowTime) {
+            this.axios = axios.create({
+                baseURL: serverBridge,
+                timeout: 2000,
+                headers: {
+                    'authorization': `Bearer ${this.bridge_token}`
+                }
+            });
+            this.buildTime=new Date().getTime() / 1000;
+            console.log('*************rebuild axiosWithAuth success**************')
+        }    
+    },
+    checkToken:async function(){
+        let nowTime = new Date().getTime() / 1000;
+        if (this.tokenTime + 3600 * 12 < nowTime) {
+            await this.refreshToken();
+        }
+    }
+}
+
+axiosWithAuth.refreshToken();
 
 
 async function checkUserIdByOpenId(openId) {
@@ -64,9 +102,12 @@ async function exchangeUserId(openId) {
 
 async function checkUserIdRemote(userId) {
     //检测userid是否存在，并去游戏服务器请求,默认return true
-    let aimUrl = `${serverBridge}/checkUserID?userid=${userId}`;
-    let checkRes = await axios.get(aimUrl).catch(err => {
-        console.log(err)
+    await axiosWithAuth.checkToken();
+    axiosWithAuth.axiosBuilder();
+
+    let aimUrl = `/checkUserID?userid=${userId}`;
+    let checkRes = await axiosWithAuth.axios.get(aimUrl).catch(err => {
+        //console.log(err)
     });
     if (!checkRes) return false;
     return checkRes.data.code > 0 ? true : false;
@@ -280,21 +321,21 @@ async function exchangeOpenToUnion(openId) {
 }
 
 async function getWechatOrders(unionId) {
-    const {
-        serverBridge
-    } = require('../danger.config')
-    let aimUrl = `${serverBridge}/getOrdersByUnion`;
-    let ordersRes = await axios.post(aimUrl, {
+
+    await axiosWithAuth.checkToken();
+    axiosWithAuth.axiosBuilder();
+
+    let ordersRes = await axiosWithAuth.axios.post(`/getOrdersByUnion`, {
         unionid: unionId
     }).catch(err => {
         console.log("getWechatOrders() services", err)
     })
     if (ordersRes) {
         return ordersRes.data
-    }else {
+    } else {
         return {
-            code:-1,
-            message:"bridge server error"
+            code: -1,
+            message: "bridge server error"
         }
     }
 

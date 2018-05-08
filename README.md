@@ -48,4 +48,4 @@
 
 ## 合并了实际开发
 
-请学习交流的亲，使用base.config.js(请用自己的参数)代替danger.config.js(未上传)
+请学习交流的亲，使用base.config.js(请用自己的参数)代替danger.config.js(未上传)，关于server-bridge部分，不做详细说明，应用到实际项目
