@@ -39,20 +39,19 @@ let axiosWithAuth = {
     axios: undefined,
     bridge_token: '',
     tokenTime: undefined,
-    buildTime:undefined,
+    buildTime: undefined,
     refreshToken: async function () {
         let loginRes = await axios.post(`${serverBridge}/registerToken`, {
             userSecret: "Hdhak7Gdas7pl8Jsgv5RrsIk"
         }).catch(err => {
             console.error("axiosWithAuth refreshToken error", err)
         })
-        this.bridge_token= loginRes.data.jwtoken;
+        this.bridge_token = loginRes.data.jwtoken;
         this.tokenTime = new Date().getTime() / 1000;
-        console.error("axiosWithAuth refreshToken bridge_token", this.bridge_token);
     },
     axiosBuilder: function () {
         let nowTime = new Date().getTime() / 1000;
-        if (!this.buildTime||this.buildTime + 3600 * 10 < nowTime) {
+        if (!this.buildTime || this.buildTime + 3600 * 10 < nowTime) {
             this.axios = axios.create({
                 baseURL: serverBridge,
                 timeout: 2000,
@@ -60,11 +59,10 @@ let axiosWithAuth = {
                     'authorization': `Bearer ${this.bridge_token}`
                 }
             });
-            this.buildTime=new Date().getTime() / 1000;
-            console.log('*************rebuild axiosWithAuth success**************')
-        }    
+            this.buildTime = new Date().getTime() / 1000;
+        }
     },
-    checkToken:async function(){
+    checkToken: async function () {
         let nowTime = new Date().getTime() / 1000;
         if (this.tokenTime + 3600 * 12 < nowTime) {
             await this.refreshToken();
@@ -88,7 +86,7 @@ async function checkUserIdByOpenId(openId) {
     let checkRes = await axios.post(aimUrl, {
         unionid
     }).catch(err => {
-        console.log(err)
+        console.error("checkUserIdByOpenId error\n",err)
     });
     if (!checkRes) return false;
     return checkRes.data.code > 0 ? true : false;
@@ -107,7 +105,7 @@ async function checkUserIdRemote(userId) {
 
     let aimUrl = `/checkUserID?userid=${userId}`;
     let checkRes = await axiosWithAuth.axios.get(aimUrl).catch(err => {
-        //console.log(err)
+        console.error("checkUserIdRemote error",err)
     });
     if (!checkRes) return false;
     return checkRes.data.code > 0 ? true : false;
@@ -117,7 +115,7 @@ async function checkUserIdRemote(userId) {
 //统一下单api
 async function createUnifiedOrder(openid, tradeNum, total_fee, body, userIp, attach) {
     let aimUrl = `https://api.mch.weixin.qq.com/pay/unifiedorder`;
-    let notify_url = 'http://test.lxxiyou.cn:5555/payInfoReceiver';
+    let notify_url = serverBridge + '/payInfoReceiver';
     let {
         sign,
         nonce_str
@@ -148,7 +146,7 @@ async function createUnifiedOrder(openid, tradeNum, total_fee, body, userIp, att
             let json = await xml2json(res.data)
             resolve(json);
         }).catch(err => {
-            console.log('createUnifiedOrder err', err)
+            console.error('createUnifiedOrder err', err)
             reject(err)
         })
     })
@@ -187,11 +185,11 @@ async function checkPayment(transaction_id) {
             let json = await xml2json(res.data)
             resolve(json);
         }).catch(err => {
-            console.log('unipay err', err)
+            console.error('unipay err', err)
             reject(err)
         })
     })
-    console.log('-----------------------checkPayment checkRes--------------------------', checkRes)
+    
     return checkRes;
 }
 
@@ -213,7 +211,7 @@ async function checkAndGetToken() {
             axios.get(aimUrl).then(res => {
                 resolve(res)
             }).catch(err => {
-                console.log(err)
+                console.error("checkAndGetToken",err)
                 reject(err)
             })
         })
@@ -233,7 +231,7 @@ async function checkAndGetTicket(token) {
             axios.get(aimUrl).then(res => {
                 resolve(res)
             }).catch(err => {
-                console.log(err)
+                console.log("checkAndGetTicket error",err)
                 reject(err)
             })
         })
@@ -248,7 +246,6 @@ async function signatureSdk(url) {
     let token = await checkAndGetToken();
     let ticket = await checkAndGetTicket(token);
     let sigInfo = signTicket(ticket, url);
-    console.log('server sig ticket', ticket);
     delete sigInfo.jsapi_ticket
     return sigInfo;
 }
@@ -261,7 +258,7 @@ async function exchangeAuthToken(code) {
         axios.get(aimUrl).then(res => {
             resolve(res)
         }).catch(err => {
-            console.log('get Auth token err', err);
+            console.error('get Auth token err', err);
             reject(err)
         })
     })
@@ -274,7 +271,7 @@ async function getUserInfo(token, openid) {
         axios.get(aimUrl).then(res => {
             resolve(res)
         }).catch(err => {
-            console.log('get Auth User Info err', err);
+            console.error('get Auth User Info err', err);
             reject(err)
         })
     })
@@ -287,7 +284,7 @@ async function checkToken(token, openid) {
         axios.get(aimUrl).then(res => {
             resolve(res)
         }).catch(err => {
-            console.log('get Auth User Info err', err);
+            console.error('get Auth User Info err', err);
             reject(err)
         })
     })
@@ -302,7 +299,7 @@ async function refreshToken(r_token, openid) {
         axios.get(aimUrl).then(res => {
             resolve(res)
         }).catch(err => {
-            console.log('refresh token err', err);
+            console.error('refresh token err', err);
             reject(err)
         })
     });
@@ -328,7 +325,7 @@ async function getWechatOrders(unionId) {
     let ordersRes = await axiosWithAuth.axios.post(`/getOrdersByUnion`, {
         unionid: unionId
     }).catch(err => {
-        console.log("getWechatOrders() services", err)
+        console.error("getWechatOrders() error", err)
     })
     if (ordersRes) {
         return ordersRes.data

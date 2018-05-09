@@ -93,8 +93,6 @@ async function postCode(ctx, next) {
     if (tokenRes.openid) {
         let openid = tokenRes.openid;
 
-        console.log('post code openid', openid);
-
         let token = tokenRes.access_token;
 
         let infoRes = await getUserInfo(token, openid);
@@ -196,7 +194,6 @@ async function requestPayment(ctx, next) {
         let payInfo = ctx.request.body;
 
         let userIp = ctx.req.connection.remoteAddress.substr(7);
-        console.log('---------------User IP-----------------------', userIp, '----------------------User IP----------------------')
 
         //客户端IP签名验证
         let reg = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/ig;
@@ -208,13 +205,10 @@ async function requestPayment(ctx, next) {
 
             //生成订单号，并通过订单号
             let tradeNo = generateTradeNo();
-            console.log('------------生成的trade-no为--------------', tradeNo)
 
             let tradebody = '嘻游娱乐-兰花充值';
 
             let total_fee = payInfo.totalPrice / 10;
-
-            console.log('requestPayment payinfo', payInfo)
 
             //attach要带上userid unionid 和goodtype,现改为userid,userid要么是数字要么是self
 
@@ -250,7 +244,7 @@ async function requestPayment(ctx, next) {
 
 //对前端的支付请求信息进行验证
 async function checkPayInfo(payInfo, openId) {
-    console.log('--------------------begin check', payInfo, 'pay info------------------------------')
+
     const goodTypeArr = ['ghtype12', 'ghtype25', 'ghtype38'];
     const priceObj = {
         ghtype12: 20,
@@ -269,7 +263,7 @@ async function checkPayInfo(payInfo, openId) {
         //检测该openid及unionid是否注册过游戏ID
 
         let checkUserIdRes = await checkUserIdByOpenId(openId);
-        console.log("check self res", checkUserIdRes)
+
         if (!checkUserIdRes) return false;
 
     } else if (payTarget === 'others') {
