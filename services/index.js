@@ -107,6 +107,9 @@ async function checkUserIdRemote(userId) {
     let checkRes = await axiosWithAuth.axios.get(aimUrl).catch(err => {
         console.error("checkUserIdRemote error",err)
     });
+    if (checkRes.data.code==-2) {
+        axiosWithAuth.refreshToken()
+    }
     if (!checkRes) return false;
     return checkRes.data.code > 0 ? true : false;
 
@@ -317,6 +320,11 @@ async function exchangeOpenToUnion(openId) {
     return dataValues.unionid
 }
 
+
+async function checkIfLogined(unionId){
+
+}
+
 async function getWechatOrders(unionId) {
 
     await axiosWithAuth.checkToken();
@@ -327,6 +335,10 @@ async function getWechatOrders(unionId) {
     }).catch(err => {
         console.error("getWechatOrders() error", err)
     })
+
+    if (ordersRes.data.code==-2) {
+        axiosWithAuth.refreshToken()
+    }
     if (ordersRes) {
         return ordersRes.data
     } else {

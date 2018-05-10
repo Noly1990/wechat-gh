@@ -117,13 +117,43 @@ function formatOrder(ordersList) {
       label: "38*兰花（30送8）",
       value: "ghtype38",
       price: 60
+    },
+    apptype1:{
+      label:"1朵兰花",
+      value:'apptype1',
+      price:3
+    },
+    apptype10:{
+      label:"10朵兰花",
+      value:'apptype10',
+      price:28    },
+    apptype20:{
+      label:"20朵兰花",
+      value:'apptype20',
+      price:55
+    },
+    apptype40:{
+      label:"40朵兰花",
+      value:'apptype40',
+      price:108
+    },
+    apptype80:{
+      label:"80朵兰花",
+      value:'apptype80',
+      price:208
+    },
+    apptype120:{
+      label:"120朵兰花",
+      value:'apptype120',
+      price:308
     }
   }
+
   let tempArr = []
   for (var i = 0; i < ordersList.length; i++) {
     let tempItem = {};
     tempItem.TradeType = ordersList[i].TradeType === 'JSAPI' ? "公众号" : "APP微信";
-    tempItem.Remark = ordersList[i].Remark === 'self' ? "给自己" : "给他人";
+    tempItem.Remark = ordersList[i].Remark === 'others' ? "给他人" : "给自己";
     tempItem.TotalAmount = ordersList[i].TotalAmount / 100;
     let str = ordersList[i].OrderTime;
     tempItem.OrderTime = `${str.substr(0,4)}-${str.substr(4,2)}-${str.substr(6,2)} ${str.substr(8,2)}:${str.substr(10,2)}`

@@ -285,6 +285,7 @@ async function getOrders(ctx, next) {
         let openId = aesDecrypt(cryptoId);
         let unionid = await exchangeOpenToUnion(openId);
         let ordersRes=await getWechatOrders(unionid);
+        console.log('------getOrders-------',ordersRes)
         if (ordersRes.code>0) {
             ctx.body={
                 code:1,
