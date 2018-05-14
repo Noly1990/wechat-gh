@@ -33,28 +33,6 @@ router.get('/testcookies', async (ctx, next) => {
 })
 
 
-const { log } = require('../utils/logger')
-
-
-router.get('/index', async (ctx, next) => {
-  await ctx.render('index', {
-    title: "测试主页"
-  })
-})
-
-
-router.get('/outhpage', async (ctx, next) => {
-  await ctx.render('outhpage', {
-    title: "授权页面"
-  })
-})
-
-router.get('/guide', async (ctx, next) => {
-  await ctx.render('guide', {
-    title: "统一导航页面"
-  })
-})
-
 const { payLog } = require('../utils/logger')
 
 
@@ -80,6 +58,27 @@ router.all('/outhpage', ctx => {
   ctx.status = 302;
 });
 
+
+router.get('/index', async (ctx, next) => {
+  await ctx.render('index', {
+    title: "测试主页"
+  })
+})
+
+
+router.get('/outhpage', async (ctx, next) => {
+  await ctx.render('outhpage', {
+    title: "授权页面"
+  })
+})
+
+router.get('/guide', async (ctx, next) => {
+  await ctx.render('guide', {
+    title: "统一导航页面"
+  })
+})
+
+
 router.get('/pay', async (ctx, next) => {
   await ctx.render('pay', {
     title: "嘻游游戏充值"
@@ -94,9 +93,6 @@ router.get('/download', async (ctx, next) => {
 })
 
 router.get('/mine', async (ctx, next) => {
-  
-
-
   await ctx.render('mine', {
     title: "个人中心"
   })
