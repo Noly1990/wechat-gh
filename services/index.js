@@ -312,17 +312,25 @@ async function refreshToken(r_token, openid) {
 
 async function exchangeOpenToUnion(openId) {
     let findRes = await findUserDb(openId);
-
-    let {
-        dataValues
-    } = findRes;
-
-    return dataValues.unionid
+    if (findRes) {
+        return findRes.dataValues.unionid
+    }else {
+        return null;
+    }
 }
 
 
-async function checkIfLogined(unionId){
+async function checkIfExistedRemote(openId){
 
+    let unionId=await exchangeOpenToUnion(openId);
+    await axiosWithAuth.checkToken();
+    axiosWithAuth.axiosBuilder();
+    let checkExistedRes=await axiosWithAuth.axios.post(`/exchangeUserID`, {
+        unionid: unionId
+    }).catch(err => {
+        console.error("checkIfExistedRemote() error", err)
+    })
+    return checkExistedRes;
 }
 
 async function getWechatOrders(unionId) {
@@ -363,5 +371,6 @@ module.exports = {
     checkUserIdByOpenId,
     checkUserIdRemote,
     exchangeOpenToUnion,
-    getWechatOrders
+    getWechatOrders,
+    checkIfExistedRemote
 }

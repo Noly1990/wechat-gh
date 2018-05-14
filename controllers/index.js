@@ -10,7 +10,8 @@ const {
     createPayment,
     checkUserIdByOpenId,
     checkUserIdRemote,
-    getWechatOrders
+    getWechatOrders,
+    checkIfExistedRemote
 } = require('../services')
 
 const {
@@ -19,7 +20,9 @@ const {
 
 const {
     addNewUserDb,
-    findUserDb
+    findUserDb,
+    addTokenToUserDb,
+    addUserIdToUserDb
 } = require('../db/operate')
 
 const {
@@ -91,16 +94,45 @@ async function postCode(ctx, next) {
     let tokenRes = await exchangeAuthToken(json.code);
 
     if (tokenRes.openid) {
-        let openid = tokenRes.openid;
 
-        let token = tokenRes.access_token;
+        let openId = tokenRes.openid;
 
-        let infoRes = await getUserInfo(token, openid);
+        let findOpenId = await findUserDb(openId);
 
-        //待数据库稳定之后，加入用户检测，已存在的不再增加
-        let saveRes = await addNewUserDb(infoRes);
+        if (findOpenId) {
+            //如果是已经登陆过的,执行已登陆流程
 
-        let cryptoId = aesEncrypt(openid);
+            let checkExisted = await checkIfExistedRemote(openId)
+            if (checkExisted.data.code > 0) {
+                await addUserIdToUserDb(openId,checkExisted.data.userid)
+            }
+        } else {
+
+            //如果是未登陆过的，执行未登陆流程
+            let token = tokenRes.access_token;
+
+            //保存用户的信息，目前没有提供用户信息刷新功能，后期加入
+
+            let infoRes = await getUserInfo(token, openId);
+
+            // let addTokenRes = await addTokenToUserDb(openId, {
+            //     access_token: tokenRes.access_token,
+            //     refresh_token: tokenRes.refresh_token
+            // })
+            let saveRes = await addNewUserDb(infoRes);
+
+            let checkExisted = await checkIfExistedRemote(openId)
+            if (checkExisted.data.code>0) {
+                await addUserIdToUserDb(openId,checkExisted.data.userid)
+            }
+            
+            //待数据库稳定之后，加入用户检测，已存在的不再增 已增加完成
+        }
+
+
+        //无论如果都要给客户端设置cookie，维持登陆态
+
+        let cryptoId = aesEncrypt(openId);
 
         ctx.cookies.set('cryptoId', cryptoId, {
             domain: 'long.lxxiyou.cn',
@@ -284,20 +316,19 @@ async function getOrders(ctx, next) {
     if (cryptoId) {
         let openId = aesDecrypt(cryptoId);
         let unionid = await exchangeOpenToUnion(openId);
-        let ordersRes=await getWechatOrders(unionid);
-        console.log('------getOrders-------',ordersRes)
-        if (ordersRes.code>0) {
-            ctx.body={
-                code:1,
-                ordersList:ordersRes.ordersList
+        let ordersRes = await getWechatOrders(unionid);
+        if (ordersRes.code > 0) {
+            ctx.body = {
+                code: 1,
+                ordersList: ordersRes.ordersList
             }
-        }else {
-            ctx.body={
-                code:-1,
-                message:ordersRes.message
+        } else {
+            ctx.body = {
+                code: -1,
+                message: ordersRes.message
             }
         }
-        
+
     } else {
         ctx.body = {
             code: -1,

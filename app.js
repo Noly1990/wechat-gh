@@ -5,7 +5,7 @@ const json = require('koa-json')
 const onerror = require('koa-onerror')
 const bodyparser = require('koa-bodyparser')
 const logger = require('koa-logger')
-
+const helmet = require("koa-helmet");
 const index = require('./routes/index')
 
 const xmlParser = require('koa-xml-body')
@@ -17,6 +17,10 @@ onerror(app);
 //数据库连接和初始化,运行中请慎用初始化
 mysql.connect();
 mysql.weakInit();
+//mysql.dangerInit();
+
+
+app.use(helmet());
 
 // middlewares
 app.use(xmlParser({
@@ -27,8 +31,7 @@ app.use(xmlParser({
   onerror: (err, ctx) => {
     ctx.throw(err.status, err.message);
   }
-}
-))
+}))
 
 app.use(bodyparser({
   enableTypes: ['json', 'form', 'text']

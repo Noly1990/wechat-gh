@@ -50,13 +50,13 @@ const User = sequelize.define('user', {
         type: Sequelize.STRING
     },
     last_access_token_time: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
     },
     refresh_token: {
         type: Sequelize.STRING
     },
     last_refresh_token_time: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
     }
 });
 module.exports = User
