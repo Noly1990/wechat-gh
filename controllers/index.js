@@ -46,7 +46,6 @@ async function pureGet(ctx, next) {
     ctx.body = echostr + '';
 }
 
-
 async function purePost(ctx, next) {
     const {
         openid
@@ -310,7 +309,6 @@ async function checkPayInfo(payInfo, openId) {
     return true;
 }
 
-
 async function getOrders(ctx, next) {
     let cryptoId = ctx.cookies.get('cryptoId');
     if (cryptoId) {
@@ -336,15 +334,6 @@ async function getOrders(ctx, next) {
         }
     }
 
-}
-
-
-async function checkUserId(ctx, next) {
-    //checkUserIdremote
-    ctx.body = {
-        code: -1,
-        message: '用户不存在'
-    }
 }
 
 
