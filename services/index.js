@@ -92,11 +92,6 @@ async function checkUserIdByOpenId(openId) {
     return checkRes.data.code > 0 ? true : false;
 }
 
-async function exchangeUserId(openId) {
-    //先检测本地数据库是否存在userid，不存在，则去远端请求并更新本地数据库，这里处于安全考虑，不拿来做充值的依据
-
-
-}
 
 async function checkUserIdRemote(userId) {
     //检测userid是否存在，并去游戏服务器请求,默认return true

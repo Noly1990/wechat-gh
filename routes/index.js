@@ -22,8 +22,6 @@ const { aesDecrypt, aesEncrypt } = require('../crypto')
 
 const { checkPayment } = require('../services/index')
 
-router.get('/checkUserId', indexControl.checkUserId)
-
 router.get('/testcookies', async (ctx, next) => {
   let cryptoId = ctx.cookies.get('cryptoId');
   let openId = aesDecrypt(cryptoId);
@@ -102,6 +100,13 @@ router.get('/paygreat', async (ctx, next) => {
     title: "支付成功"
   })
 })
+
+router.get('/sharepage', async (ctx, next) => {
+  await ctx.render('sharepage', {
+    title: "分享中转页"
+  })
+})
+
 
 const { setButtons } = require('../utils/setGHbuttons')
 

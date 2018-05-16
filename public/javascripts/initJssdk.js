@@ -14,7 +14,9 @@ function initSdk(){
             jsApiList: [
                 'checkJsApi',
                 'chooseImage',
-                'chooseWXPay'
+                'chooseWXPay',
+                'onMenuShareTimeline',
+                'onMenuShareAppMessage'
             ] 
         })
     

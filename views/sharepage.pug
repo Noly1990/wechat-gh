@@ -1,0 +1,13 @@
+extends layout
+
+block append head
+  script(src="https://unpkg.com/axios/dist/axios.min.js")
+  script(src="/javascripts/initJssdk.js")
+  
+
+block content
+  div(id="app") 这是一个分享页面
+  //- button(onclick='chooseImg()') 选择图片
+  script(src="/javascripts/sharepage.js")
+  script.
+    console.log('这是一个分享页面')

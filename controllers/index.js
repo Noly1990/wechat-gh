@@ -344,6 +344,5 @@ module.exports = {
     getSig,
     getUserStatus,
     requestPayment,
-    checkUserId,
     getOrders
 }
