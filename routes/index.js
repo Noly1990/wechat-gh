@@ -51,6 +51,9 @@ router.post('/requestPayment', indexControl.requestPayment)
 
 
 router.all('/outhpage', ctx => {
+  if (ctx.query.aimpage === void 0) {
+    return ;
+  }
   let aimpage = ctx.query.aimpage;
   ctx.redirect(`https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appid}&redirect_uri=${aimpage}&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect`);
   ctx.status = 302;
@@ -111,6 +114,9 @@ router.get('/sharepage', async (ctx, next) => {
 const { setButtons } = require('../utils/setGHbuttons')
 
 router.get('/setGHbuttons', async (ctx, next) => {
+  if (ctx.query.adminSecret === void 0) {
+    return ;
+  }
   const { adminSecret } = ctx.query;
   console.log('---------------------有人尝试更改公众号按钮------------------------');
   if (adminSecret === "buttonMiMa") {

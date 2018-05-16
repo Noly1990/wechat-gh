@@ -89,7 +89,7 @@ async function purePost(ctx, next) {
 
 async function postCode(ctx, next) {
     let json = ctx.request.body;
-
+    if (!json.code) return;
     let tokenRes = await exchangeAuthToken(json.code);
 
     if (tokenRes.openid) {
@@ -156,6 +156,7 @@ async function postCode(ctx, next) {
 
 async function getUserStatus(ctx, next) {
     let cryptoId = ctx.cookies.get('cryptoId');
+    if (!cryptoId) return ;
     let openid = aesDecrypt(cryptoId);
     let findRes = await findUserDb(openid);
     if (findRes) {
@@ -199,6 +200,8 @@ async function getUserStatus(ctx, next) {
 
 
 async function getSig(ctx, next) {
+
+    if (ctx.request.body.url===void 0) return;
 
     let {
         url
