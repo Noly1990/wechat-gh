@@ -39,7 +39,6 @@ let axiosWithAuth = {
     axios: undefined,
     bridge_token: '',
     tokenTime: undefined,
-    buildTime: undefined,
     refreshToken: async function () {
         let loginRes = await axios.post(`${serverBridge}/registerToken`, {
             userSecret: "Hdhak7Gdas7pl8Jsgv5RrsIk"
@@ -47,20 +46,15 @@ let axiosWithAuth = {
             console.error("axiosWithAuth refreshToken error", err)
         })
         this.bridge_token = loginRes.data.jwtoken;
+        this.axios = axios.create({
+            baseURL: serverBridge,
+            timeout: 2000,
+            headers: {
+                'authorization': `Bearer ${this.bridge_token}`
+            }
+        });
         this.tokenTime = new Date().getTime() / 1000;
-    },
-    axiosBuilder: function () {
-        let nowTime = new Date().getTime() / 1000;
-        if (!this.buildTime || this.buildTime + 3600 * 10 < nowTime) {
-            this.axios = axios.create({
-                baseURL: serverBridge,
-                timeout: 2000,
-                headers: {
-                    'authorization': `Bearer ${this.bridge_token}`
-                }
-            });
-            this.buildTime = new Date().getTime() / 1000;
-        }
+
     },
     checkToken: async function () {
         let nowTime = new Date().getTime() / 1000;
@@ -74,21 +68,27 @@ axiosWithAuth.refreshToken();
 
 
 async function checkUserIdByOpenId(openId) {
-    //openid转化成unionid，并去游戏服务器请求,默认return true
-    let findRes = await findUserDb(openId);
-    let {
-        dataValues
-    } = findRes;
-    const {
-        unionid
-    } = dataValues;
+
+    //openid转化成unionid，并去游戏服务器请求该用户是否登陆过
+    let unionId=await exchangeOpenToUnion(openId);
+
+    await axiosWithAuth.checkToken();
+
     let aimUrl = `${serverBridge}/exchangeUserID`;
     let checkRes = await axios.post(aimUrl, {
-        unionid
+        unionid: unionId
     }).catch(err => {
         console.error("checkUserIdByOpenId error\n",err)
     });
     if (!checkRes) return false;
+    if (checkRes.data.code==-2) {
+        await axiosWithAuth.refreshToken()
+        checkRes = await axios.post(aimUrl, {
+            unionid: unionId
+        }).catch(err => {
+            console.error("checkUserIdByOpenId error\n",err)
+        });
+    }
     return checkRes.data.code > 0 ? true : false;
 }
 
@@ -96,19 +96,74 @@ async function checkUserIdByOpenId(openId) {
 async function checkUserIdRemote(userId) {
     //检测userid是否存在，并去游戏服务器请求,默认return true
     await axiosWithAuth.checkToken();
-    axiosWithAuth.axiosBuilder();
 
     let aimUrl = `/checkUserID?userid=${userId}`;
     let checkRes = await axiosWithAuth.axios.get(aimUrl).catch(err => {
         console.error("checkUserIdRemote error",err)
     });
     if (checkRes.data.code==-2) {
-        axiosWithAuth.refreshToken()
+        await axiosWithAuth.refreshToken()
+        checkRes = await axiosWithAuth.axios.get(aimUrl).catch(err => {
+            console.error("checkUserIdRemote error",err)
+        });
     }
     if (!checkRes) return false;
     return checkRes.data.code > 0 ? true : false;
 
 }
+
+async function checkIfExistedRemote(openId){
+
+    let unionId=await exchangeOpenToUnion(openId);
+    await axiosWithAuth.checkToken();
+
+    let checkExistedRes=await axiosWithAuth.axios.post(`/exchangeUserID`, {
+        unionid: unionId
+    }).catch(err => {
+        console.error("checkIfExistedRemote() error", err)
+    })
+    if (checkExistedRes.data.code == -2) {
+        await axiosWithAuth.refreshToken()
+        checkExistedRes=await axiosWithAuth.axios.post(`/exchangeUserID`, {
+            unionid: unionId
+        }).catch(err => {
+            console.error("checkIfExistedRemote() error", err)
+        })
+    }
+    return checkExistedRes;
+}
+
+async function getWechatOrders(unionId) {
+
+    await axiosWithAuth.checkToken();
+
+    let ordersRes = await axiosWithAuth.axios.post(`/getOrdersByUnion`, {
+        unionid: unionId
+    }).catch(err => {
+        console.error("getWechatOrders() error", err)
+    })
+
+    if (ordersRes.data.code == -2) {
+        await axiosWithAuth.refreshToken()
+        ordersRes = await axiosWithAuth.axios.post(`/getOrdersByUnion`, {
+            unionid: unionId
+        }).catch(err => {
+            console.error("getWechatOrders() error", err)
+        })
+    }
+    if (ordersRes) {
+        return ordersRes.data
+    } else {
+        return {
+            code: -1,
+            message: "bridge server error"
+        }
+    }
+
+}
+
+
+
 
 //统一下单api
 async function createUnifiedOrder(openid, tradeNum, total_fee, body, userIp, attach) {
@@ -315,43 +370,9 @@ async function exchangeOpenToUnion(openId) {
 }
 
 
-async function checkIfExistedRemote(openId){
 
-    let unionId=await exchangeOpenToUnion(openId);
-    await axiosWithAuth.checkToken();
-    axiosWithAuth.axiosBuilder();
-    let checkExistedRes=await axiosWithAuth.axios.post(`/exchangeUserID`, {
-        unionid: unionId
-    }).catch(err => {
-        console.error("checkIfExistedRemote() error", err)
-    })
-    return checkExistedRes;
-}
 
-async function getWechatOrders(unionId) {
 
-    await axiosWithAuth.checkToken();
-    axiosWithAuth.axiosBuilder();
-
-    let ordersRes = await axiosWithAuth.axios.post(`/getOrdersByUnion`, {
-        unionid: unionId
-    }).catch(err => {
-        console.error("getWechatOrders() error", err)
-    })
-
-    if (ordersRes.data.code==-2) {
-        axiosWithAuth.refreshToken()
-    }
-    if (ordersRes) {
-        return ordersRes.data
-    } else {
-        return {
-            code: -1,
-            message: "bridge server error"
-        }
-    }
-
-}
 
 module.exports = {
     createUnifiedOrder,
