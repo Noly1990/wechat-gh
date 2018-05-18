@@ -5,26 +5,20 @@ var app = new Vue({
         <div>
             <mt-swipe class="swipe-box" @change="handleChange" :show-indicators="true">
                 <mt-swipe-item>
-                    <img class="swipe-banner-img" src='/images/banner-1.png'>
+                    <img class="swipe-banner-img" src='https://xygame.xiyoucc.com/images/banner-1.png'>
                 </mt-swipe-item>
                 <mt-swipe-item>
-                    <img class="swipe-banner-img" src='/images/banner-2.png'>
+                    <img class="swipe-banner-img" src='https://xygame.xiyoucc.com/images/banner-2.png'>
                 </mt-swipe-item>
                 <mt-swipe-item>
-                    <img class="swipe-banner-img" src='/images/banner-3.jpg'>
+                    <img class="swipe-banner-img" src='https://xygame.xiyoucc.com/images/banner-3.jpg'>
                 </mt-swipe-item>
             </mt-swipe>
         </div>
 
         <div class="download-box">
-            <mt-cell to="https://www.baidu.com" class="download-item" title="游戏一(先百度)" is-link value="点击下载">
-                <img slot="icon" class="item-icon" src="/images/icon1.jpg" width="60" height="60">
-            </mt-cell>
-            <mt-cell to="https://www.baidu.com" class="download-item" title="游戏二(先百度)" is-link value="点击下载">
-                <img slot="icon" class="item-icon" src="/images/icon2.jpg" width="60" height="60">
-            </mt-cell>
-            <mt-cell to="https://www.baidu.com" class="download-item" title="游戏三(先百度)" is-link value="点击下载">
-                <img slot="icon" class="item-icon" src="/images/icon3.jpg" width="60" height="60">
+            <mt-cell to="http://fir.im/XiYou" class="download-item" title="嘻游兰溪乌龙" is-link value="点击下载">
+                <img slot="icon" class="item-icon" src="https://xygame.xiyoucc.com/images/favicon_b.ico" width="60" height="60">
             </mt-cell>
         </div>
       </div>

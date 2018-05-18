@@ -1,0 +1,14 @@
+extends layout
+
+block append head
+  script(src="https://unpkg.com/axios/dist/axios.min.js")
+  link(rel="stylesheet", href="/stylesheets/luckwheel.css")
+  script(src="https://cdn.jsdelivr.net/npm/vue")
+  script(src="/javascripts/luckwheel.js")
+  script(src="/javascripts/userAuth.js")
+
+block content
+  div(id="app") 页面加载中......
+  //- button(onclick='chooseImg()') 选择图片
+  script.
+    console.log('这是大转盘页面')

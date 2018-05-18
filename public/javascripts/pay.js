@@ -18,7 +18,7 @@ function afterAuth() {
           } = userInfo;
           initPage(nickname, headimgurl);
         } else {
-          window.location.replace(`http://long.lxxiyou.cn/outhpage?aimpage=http%3a%2f%2flong.lxxiyou.cn%2fguide`);
+          window.location.replace(`http://long.lxxiyou.cn/oauthpage?aimpage=http%3a%2f%2flong.lxxiyou.cn%2fguide`);
         }
       })
       .catch(err => {
@@ -32,12 +32,12 @@ var initPage = function (nickname, headimgurl) {
     template: `
         <div class="pay-box">
             <div class="pay-ad">
-                <img class="pay-ad-img" src="/images/banner-3.jpg" >
+                <img class="pay-ad-img" src="https://xygame.xiyoucc.com/images/banner-3.jpg" >
             </div>
             <div class="mint-radiolist">
                 <label class="mint-radiolist-title">充值游戏</label>
                 <mt-cell title="嘻游娱乐平台" is-link to="/download" value="前往下载">
-                <img class="icon-img" slot="icon" src="/images/game-icon.jpg" width="40" height="40">
+                <img class="icon-img" slot="icon" src="https://xygame.xiyoucc.com/images/favicon_b.ico" width="40" height="40">
                 </mt-cell>
             </div> 
             <mt-radio

@@ -50,7 +50,7 @@ router.post('/receivePayInfo', async ctx => {
 router.post('/requestPayment', indexControl.requestPayment)
 
 
-router.all('/outhpage', ctx => {
+router.all('/oauthpage', ctx => {
   if (ctx.query.aimpage === void 0) {
     return ;
   }
@@ -66,12 +66,12 @@ router.get('/index', async (ctx, next) => {
   })
 })
 
-
-router.get('/outhpage', async (ctx, next) => {
-  await ctx.render('outhpage', {
-    title: "授权页面"
-  })
-})
+//--弃用---------------------------
+// router.get('/oauthpage', async (ctx, next) => {
+//   await ctx.render('oauthpage', {
+//     title: "授权页面"
+//   })
+// })
 
 router.get('/guide', async (ctx, next) => {
   await ctx.render('guide', {
@@ -110,6 +110,21 @@ router.get('/sharepage', async (ctx, next) => {
   })
 })
 
+router.get('/luckwheel', async (ctx, next) => {
+  await ctx.render('luckwheel', {
+    title: "幸运大转盘"
+  })
+})
+
+router.get('/lottowheel', async (ctx, next) => {
+  let cryptoId = ctx.cookies.get('cryptoId');
+  let openId = aesDecrypt(cryptoId);
+  var lotto_result = Math.floor(Math.random() * 7);
+  ctx.body = {
+    code:1,
+    lotto_result
+  }
+})
 
 const { setButtons } = require('../utils/setGHbuttons')
 

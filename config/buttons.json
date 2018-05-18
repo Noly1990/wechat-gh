@@ -12,6 +12,11 @@
                     "type": "click",
                     "name": "每日签到",
                     "key": "Attendance"
+                },
+                {
+                    "type": "view",
+                    "name": "幸运转盘",
+                    "url": "http://long.lxxiyou.cn/oauthpage?aimpage=http%3a%2f%2flong.lxxiyou.cn%2fluckwheel"
                 }
             ]
         },
@@ -26,7 +31,7 @@
                 {
                     "type": "view",
                     "name": "游戏充值",
-                    "url": "http://long.lxxiyou.cn/outhpage?aimpage=http%3a%2f%2flong.lxxiyou.cn%2fpay"
+                    "url": "http://long.lxxiyou.cn/oauthpage?aimpage=http%3a%2f%2flong.lxxiyou.cn%2fpay"
                 }
             ]
         },
@@ -36,7 +41,7 @@
                 {
                     "type": "view",
                     "name": "个人中心",
-                    "url": "http://long.lxxiyou.cn/outhpage?aimpage=http%3a%2f%2flong.lxxiyou.cn%2fmine"
+                    "url": "http://long.lxxiyou.cn/oauthpage?aimpage=http%3a%2f%2flong.lxxiyou.cn%2fmine"
                 }
             ]
         }

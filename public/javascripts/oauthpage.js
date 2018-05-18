@@ -1,5 +1,5 @@
 
-//已经弃用
+//已经弃用--------------------
 
 function getQueryString(name) {
     var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i');
