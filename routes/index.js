@@ -4,7 +4,9 @@ const checkSig = require('../middlewares/checkSig')
 
 const indexControl = require('../controllers/index')
 
-const { appid } = require('../danger.config')
+const {
+  appid
+} = require('../danger.config')
 
 router.get('/', checkSig, indexControl.pureGet)
 
@@ -12,15 +14,20 @@ router.post('/', checkSig, indexControl.purePost)
 
 router.get('/getUserStatus', indexControl.getUserStatus)
 
-router.get('/getOrders',indexControl.getOrders)
+router.get('/getOrders', indexControl.getOrders)
 
 router.post('/postCode', indexControl.postCode)
 
 router.post('/getSig', indexControl.getSig)
 
-const { aesDecrypt, aesEncrypt } = require('../crypto')
+const {
+  aesDecrypt,
+  aesEncrypt
+} = require('../crypto')
 
-const { checkPayment } = require('../services/index')
+const {
+  checkPayment
+} = require('../services/index')
 
 router.get('/testcookies', async (ctx, next) => {
   let cryptoId = ctx.cookies.get('cryptoId');
@@ -31,13 +38,17 @@ router.get('/testcookies', async (ctx, next) => {
 })
 
 
-const { payLog } = require('../utils/logger')
+const {
+  payLog
+} = require('../utils/logger')
 
 
 //准备把支付成功的回调地址迁移
 router.post('/receivePayInfo', async ctx => {
   let xml = ctx.request.body.xml;
-  const { transaction_id } = xml;
+  const {
+    transaction_id
+  } = xml;
   let checkRes = await checkPayment(transaction_id);
   payLog.info('check payment res', checkRes);
   ctx.body = `<xml>
@@ -52,7 +63,7 @@ router.post('/requestPayment', indexControl.requestPayment)
 
 router.all('/oauthpage', ctx => {
   if (ctx.query.aimpage === void 0) {
-    return ;
+    return;
   }
   let aimpage = ctx.query.aimpage;
   ctx.redirect(`https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appid}&redirect_uri=${aimpage}&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect`);
@@ -116,23 +127,45 @@ router.get('/luckwheel', async (ctx, next) => {
   })
 })
 
+const {
+  generateLotto,
+  addBonus,
+  checkBonus,
+  minusBonus
+} = require('../services/luckwheel')
+
 router.get('/lottowheel', async (ctx, next) => {
   let cryptoId = ctx.cookies.get('cryptoId');
   let openId = aesDecrypt(cryptoId);
-  var lotto_result = Math.floor(Math.random() * 7);
-  ctx.body = {
-    code:1,
-    lotto_result
+
+  if (await checkBonus(openId)) {
+    await minusBonus(openId,5)
+    var lotto_result = generateLotto();
+    ctx.body = {
+      code: 1,
+      lotto_result
+    }
+  }else {
+    ctx.body = {
+      code: -1,
+      message:"积分不够"
+    }
   }
+  
+  
 })
 
-const { setButtons } = require('../utils/setGHbuttons')
+const {
+  setButtons
+} = require('../utils/setGHbuttons')
 
 router.get('/setGHbuttons', async (ctx, next) => {
   if (ctx.query.adminSecret === void 0) {
-    return ;
+    return;
   }
-  const { adminSecret } = ctx.query;
+  const {
+    adminSecret
+  } = ctx.query;
   console.log('---------------------有人尝试更改公众号按钮------------------------');
   if (adminSecret === "buttonMiMa") {
     console.log('---------------------更改公众号按钮成功------------------------');

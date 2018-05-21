@@ -63,10 +63,9 @@ var initPage = function (nickname, headimgurl) {
           <div class="tip">
               <div class="tip-title">活动规则</div>
               <div class="tip-content">
-                  <p> 1.每日签到获得10积分，通过签到和其他活动获得积分</p>
-                  <p> 2.使用积分进行抽奖，每次消耗20积分</p>
-                  <p> 3.转盘抽奖取得的奖品会在一定时间内到账</p>
-                  <p> 4.本公司保留抽奖的解释权，如有作弊，一律清零</p>
+                  <p> 1.每日签到获得10积分，通过签到和其他活动获得积分,每次抽奖消耗20积分</p>
+                  <p> 2.转盘抽奖取得的奖品会在一定时间内到账，抽奖获得的房卡只能对自己的账户生效</p>
+                  <p> 3.本公司保留抽奖的解释权，如有作弊，一律清零</p>
               </div>
           </div>
       </div>
@@ -83,8 +82,7 @@ var initPage = function (nickname, headimgurl) {
           </div>
       </div>
       <div class="toast-mask" v-show="toast_control"></div>
-  </div>
-          `,
+  </div>`,
     data: {
       nickname,
       headimgurl,
@@ -93,43 +91,43 @@ var initPage = function (nickname, headimgurl) {
       prize_list: [{
           icon: "https://xygame.xiyoucc.com/images/luckwheel/bean_500.png", // 奖品图片
           count: 10, // 奖品数量
-          name: "奖品0", // 奖品名称
+          name: "兰花10", // 奖品名称
           isPrize: 1 // 该奖项是否为奖品
         },
         {
           icon: "https://xygame.xiyoucc.com/images/luckwheel/bean_five.png",
           count: 5,
-          name: "奖品1",
+          name: "兰花5",
           isPrize: 1
         },
         {
           icon: "https://xygame.xiyoucc.com/images/luckwheel/bean_one.png",
-          count: 10,
-          name: "奖品2",
+          count: 3,
+          name: "兰花3",
           isPrize: 1
         },
         {
-          icon: "https://xygame.xiyoucc.com/images/luckwheel/point_five.png",
-          count: 5,
-          name: "奖品3",
+          icon: "https://xygame.xiyoucc.com/images/luckwheel/bean_one.png",
+          count: 1,
+          name: "兰花1",
           isPrize: 1
         },
         {
           icon: "https://xygame.xiyoucc.com/images/luckwheel/point_ten.png",
-          count: 10,
-          name: "奖品4",
+          count: 30,
+          name: "30积分",
           isPrize: 1
         },
         {
-          icon: "https://xygame.xiyoucc.com/images/luckwheel/bean_500.png",
-          count: 10,
-          name: "奖品5",
+          icon: "https://xygame.xiyoucc.com/images/luckwheel/point_five.png",
+          count: 20,
+          name: "20积分",
           isPrize: 1
         },
         {
-          icon: "https://xygame.xiyoucc.com/images/luckwheel/bean_500.png",
+          icon: "https://xygame.xiyoucc.com/images/luckwheel/point_five.png",
           count: 10,
-          name: "奖品6",
+          name: "10积分",
           isPrize: 1
         },
         {
@@ -177,8 +175,12 @@ var initPage = function (nickname, headimgurl) {
       async rotate_handle() {
         let lottoRes=await axios.get('/lottowheel').catch(err=>{console.log(err)})
         console.log('lotto res',lottoRes.data)
-        this.i=lottoRes.data.lotto_result;
-        this.rotating(lottoRes.data.lotto_result);
+        if (lottoRes.data.code>0) {
+          this.i=lottoRes.data.lotto_result;
+          this.rotating(lottoRes.data.lotto_result);
+        }else {
+          alert('积分不够')
+        }
       },
       rotating(index) {
         console.log('本次获奖的是',index)

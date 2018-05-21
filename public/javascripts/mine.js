@@ -77,7 +77,7 @@ var initPage = function (nickname, headimgurl, city, sex, bonus_points, userid) 
       bonus_points,
       userid,
       listShow: false,
-      ordersList:[]
+      ordersList: []
     },
     beforeMount: async function () {
       console.log('before mount');
@@ -102,51 +102,61 @@ var initPage = function (nickname, headimgurl, city, sex, bonus_points, userid) 
 }
 
 function formatOrder(ordersList) {
-  const goodType = {
-    ghtype12: {
-      label: "12*兰花（10送2）",
-      value: "ghtype12",
-      price: 20
+  const goodTypes = {
+    ghtype1: {
+      label: "兰花20赠20",
+      goodType: "ghtype1",
+      price: 40,
+      addition: 40
     },
-    ghtype25: {
-      label: "25*兰花（20送5）",
-      value: "ghtype25",
-      price: 40
+    ghtype2: {
+      label: "兰花40赠40",
+      goodType: "ghtype2",
+      price: 80,
+      addition: 80
     },
-    ghtype38:{
-      label: "38*兰花（30送8）",
-      value: "ghtype38",
-      price: 60
+    ghtype3: {
+      label: "兰花80赠80",
+      goodType: "ghtype3",
+      price: 160,
+      addition: 160
     },
-    apptype1:{
-      label:"1朵兰花",
-      value:'apptype1',
-      price:3
+    apptype1: {
+      label: "兰花10赠4",
+      goodType: "apptype1",
+      price: 20,
+      addition: 14
     },
-    apptype10:{
-      label:"10朵兰花",
-      value:'apptype10',
-      price:28    },
-    apptype20:{
-      label:"20朵兰花",
-      value:'apptype20',
-      price:55
+    apptype2: {
+      label: "兰花20赠10",
+      goodType: "apptype2",
+      price: 40,
+      addition: 30
     },
-    apptype40:{
-      label:"40朵兰花",
-      value:'apptype40',
-      price:108
+    apptype3: {
+      label: "兰花60赠38",
+      goodType: "apptype3",
+      price: 120,
+      addition: 98
     },
-    apptype80:{
-      label:"80朵兰花",
-      value:'apptype80',
-      price:208
+    apptype4: {
+      label: "兰花80赠58",
+      goodType: "apptype4",
+      price: 160,
+      addition: 138
     },
-    apptype120:{
-      label:"120朵兰花",
-      value:'apptype120',
-      price:308
-    }
+    apptype5: {
+      label: "兰花120赠88",
+      goodType: "apptype5",
+      price: 240,
+      addition: 208
+    },
+    apptype6: {
+      label: "兰花160赠128",
+      goodType: "apptype6",
+      price: 320,
+      addition: 288
+    },
   }
 
   let tempArr = []
@@ -158,7 +168,7 @@ function formatOrder(ordersList) {
     let str = ordersList[i].OrderTime;
     tempItem.OrderTime = `${str.substr(0,4)}-${str.substr(4,2)}-${str.substr(6,2)} ${str.substr(8,2)}:${str.substr(10,2)}`
     tempItem.OrderID = ordersList[i].OrderID;
-    tempItem.GoodType = goodType[ordersList[i].GoodType].label;
+    tempItem.GoodType = goodTypes[ordersList[i].GoodType].label;
     tempItem.UserID = ordersList[i].UserID;
     tempArr.push(tempItem)
   }

@@ -83,35 +83,35 @@ var initPage = function (nickname, headimgurl) {
       ],
       radioValue: "self",
       radio2Options: [{
-          label: "12*兰花（10送2）",
-          value: "ghtype12",
-          price: 20
-        },
-        {
-          label: "25*兰花（20送5）",
-          value: "ghtype25",
+          label: "40*兰花（20送20）",
+          value: "ghtype1",
           price: 40
         },
         {
-          label: "38*兰花（30送8）",
-          value: "ghtype38",
-          price: 60
+          label: "80*兰花（40送40）",
+          value: "ghtype2",
+          price: 80
+        },
+        {
+          label: "160*兰花（80送80）",
+          value: "ghtype3",
+          price: 160
         }
       ],
-      radio2Value: "ghtype12"
+      radio2Value: "ghtype1"
     },
     computed: {
       paysum() {
         let returnValue = 0;
         switch (this.radio2Value) {
-          case "ghtype12":
-            returnValue = 20;
+          case "ghtype1":
+            returnValue = this.radio2Options[0].price;
             break;
-          case "ghtype25":
-            returnValue = 40;
+          case "ghtype2":
+            returnValue = this.radio2Options[1].price;
             break;
-          case "ghtype38":
-            returnValue = 60;
+          case "ghtype3":
+            returnValue = this.radio2Options[2].price;
             break;
         }
         return returnValue;

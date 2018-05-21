@@ -124,6 +124,27 @@ async function addBonusDb(openid, value) {
     })
 }
 
+
+async function minusBonusDb(openid, value) {
+    return new Promise(function (resolve, reject) {
+        User.findOne({
+            where: {
+                openid
+            }
+        }).then(user => {
+            return user.decrement('bonus_points', {
+                by: value
+            })
+        }).then(res => {
+            resolve(res)
+        }).catch(err => {
+            console.log('minusBonusDb error', err)
+            reject(err)
+        })
+    })
+}
+
+
 async function addLikeSumDb() {
     return new Promise(function (resolve, reject) {
         Store.findOne({
@@ -167,6 +188,7 @@ module.exports = {
     checkDailyAttendanceDb,
     falseDailyAttendanceDb,
     addBonusDb,
+    minusBonusDb,
     addLikeSumDb,
     getLikeSumDb,
     addTokenToUserDb,

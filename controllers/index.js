@@ -103,7 +103,7 @@ async function postCode(ctx, next) {
 
             let checkExisted = await checkIfExistedRemote(openId)
             if (checkExisted.data.code > 0) {
-                await addUserIdToUserDb(openId,checkExisted.data.userid)
+                await addUserIdToUserDb(openId, checkExisted.data.userid)
             }
         } else {
 
@@ -121,10 +121,10 @@ async function postCode(ctx, next) {
             let saveRes = await addNewUserDb(infoRes);
 
             let checkExisted = await checkIfExistedRemote(openId)
-            if (checkExisted.data.code>0) {
-                await addUserIdToUserDb(openId,checkExisted.data.userid)
+            if (checkExisted.data.code > 0) {
+                await addUserIdToUserDb(openId, checkExisted.data.userid)
             }
-            
+
             //待数据库稳定之后，加入用户检测，已存在的不再增 已增加完成
         }
 
@@ -156,7 +156,7 @@ async function postCode(ctx, next) {
 
 async function getUserStatus(ctx, next) {
     let cryptoId = ctx.cookies.get('cryptoId');
-    if (!cryptoId) return ;
+    if (!cryptoId) return;
     let openid = aesDecrypt(cryptoId);
     let findRes = await findUserDb(openid);
     if (findRes) {
@@ -201,7 +201,7 @@ async function getUserStatus(ctx, next) {
 
 async function getSig(ctx, next) {
 
-    if (ctx.request.body.url===void 0) return;
+    if (ctx.request.body.url === void 0) return;
 
     let {
         url
@@ -278,12 +278,14 @@ async function requestPayment(ctx, next) {
 
 //对前端的支付请求信息进行验证
 async function checkPayInfo(payInfo, openId) {
-
-    const goodTypeArr = ['ghtype12', 'ghtype25', 'ghtype38'];
+    const {
+        ghPayInfo
+    } = require('../config/pay.config')
+    const goodTypeArr = [ghPayInfo.ghtype1.goodType, ghPayInfo.ghtype2.goodType, ghPayInfo.ghtype3.goodType];
     const priceObj = {
-        ghtype12: 20,
-        ghtype25: 40,
-        ghtype38: 60
+        ghtype1: ghPayInfo.ghtype1.price,
+        ghtype2: ghPayInfo.ghtype2.price,
+        ghtype3: ghPayInfo.ghtype3.price
     }
 
     const {
