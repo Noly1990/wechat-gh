@@ -31,9 +31,7 @@ let apiShangHai = 'sh.api.weixin.qq.com';
 let jsapi_ticket = '';
 let access_token = '';
 
-let jwt_auth_token = '';
-
-let last_ticket_time, last_token_time, last_jwt_time;
+let last_ticket_time, last_token_time;
 
 let axiosWithAuth = {
     axios: undefined,
@@ -74,7 +72,7 @@ async function checkUserIdByOpenId(openId) {
 
     await axiosWithAuth.checkToken();
 
-    let aimUrl = `${serverBridge}/exchangeUserID`;
+    let aimUrl = '/exchangeUserID';
     let checkRes = await axios.post(aimUrl, {
         unionid: unionId
     }).catch(err => {
@@ -94,6 +92,8 @@ async function checkUserIdByOpenId(openId) {
 
 
 async function checkUserIdRemote(userId) {
+
+    
     //检测userid是否存在，并去游戏服务器请求,默认return true
     await axiosWithAuth.checkToken();
 

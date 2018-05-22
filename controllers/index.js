@@ -2,6 +2,7 @@ const {
     answerText,
     answerEvent
 } = require('../utils/answer')
+
 const {
     exchangeOpenToUnion,
     exchangeAuthToken,
@@ -86,7 +87,6 @@ async function purePost(ctx, next) {
     }
 }
 
-
 async function postCode(ctx, next) {
     let json = ctx.request.body;
     if (!json.code) return;
@@ -102,6 +102,7 @@ async function postCode(ctx, next) {
             //如果是已经登陆过的,执行已登陆流程
 
             let checkExisted = await checkIfExistedRemote(openId)
+            console.log('----------game-id-------',checkExisted.data)
             if (checkExisted.data.code > 0) {
                 await addUserIdToUserDb(openId, checkExisted.data.userid)
             }

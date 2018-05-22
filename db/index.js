@@ -1,7 +1,12 @@
+const {
+    mysqlUser,
+    mysqlPwd
+} = require('../danger.config')
+
 class MySql {
     constructor() {
         const Sequelize = require('sequelize');
-        this.sequelize = new Sequelize('ghdata', 'root', '123456', {
+        this.sequelize = new Sequelize('ghdata', mysqlUser, mysqlPwd, {
             host: 'localhost',
             dialect: 'mysql',
             define: {
