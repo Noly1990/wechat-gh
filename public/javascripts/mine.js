@@ -169,7 +169,8 @@ function formatOrder(ordersList) {
     tempItem.OrderTime = `${str.substr(0,4)}-${str.substr(4,2)}-${str.substr(6,2)} ${str.substr(8,2)}:${str.substr(10,2)}`
     tempItem.OrderID = ordersList[i].OrderID;
     tempItem.GoodType = goodTypes[ordersList[i].GoodType].label;
-    tempItem.UserID = ordersList[i].UserID;
+    //项目中期有一次,gameid和userid的转换，导致问题
+    tempItem.UserID = ordersList[i].GameID;
     tempArr.push(tempItem)
   }
   return tempArr;

@@ -243,7 +243,7 @@ async function requestPayment(ctx, next) {
 
             let tradebody = '嘻游娱乐-兰花充值';
 
-            let total_fee = payInfo.totalPrice * 100;
+            let total_fee = payInfo.totalPrice / 10;
 
             //attach要带上userid unionid 和goodtype,现改为userid,userid要么是数字要么是self
 
