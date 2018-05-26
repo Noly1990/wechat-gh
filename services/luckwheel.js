@@ -5,32 +5,39 @@ const {
     minusBonusDb
 } = require('../db/operate')
 
-function generateLotto() {
+let totalLotto=0;
+
+async function generateLotto(openId) {
+    totalLotto++;
+    
+    if (totalLotto === 500) return 0;
     let randomNum = Math.random();
-    if (randomNum < 0.3) {
+    if (randomNum < 0.4) {
         //30%概率,未中奖
         return 7
-    } else if (randomNum >= 0.3 && randomNum < 0.55) {
-        //25%概率，10积分
+    } else if (randomNum >= 0.4 && randomNum < 0.5) {
+        //10%概率，5积分
+        await addBonus(openId,5)
         return 6
-    } else if (randomNum >= 0.55 && randomNum < 0.7) {
-        //15%概率，20积分
+    } else if (randomNum >= 0.5 && randomNum < 0.6) {
+        //10%概率，10积分
+        await addBonus(openId,10)
         return 5
-    } else if (randomNum >= 0.7 && randomNum < 0.8) {
-        //10%概率, 30积分
+    } else if (randomNum >= 0.6 && randomNum < 0.65) {
+        //5%概率, 20积分
+        await addBonus(openId,20)
         return 4
-    } else if (randomNum >= 0.8 && randomNum < 0.88) {
-        //8%概率, 1 房卡
+    } else if (randomNum >= 0.65 && randomNum < 0.85) {
+        //20%概率, 1 房卡
         return 3
-    } else if (randomNum >= 0.88 && randomNum < 0.94) {
-        //6%概率, 3 房卡
+    } else if (randomNum >= 0.85 && randomNum < 0.95) {
+        //10%概率, 8 房卡
         return 2
-    } else if (randomNum >= 0.94 && randomNum < 0.98) {
-        //4%概率, 5房卡
+    } else if (randomNum >= 0.95) {
+        //5%概率, 18房卡
         return 1
-    } else if (randomNum >= 0.98 && randomNum < 1) {
-        //2%概率, 10房卡
-        return 0
+    } else {
+        return 7
     }
 }
 
@@ -38,7 +45,7 @@ async function checkBonus(openId) {
     let findRes = await findUserDb(openId);
     if (!findRes) return false;
     let bonus = findRes.dataValues.bonus_points;
-    if (bonus >= 20) {
+    if (bonus >= 10) {
         return true
     } else {
         return false
@@ -54,9 +61,18 @@ async function addBonus(openId, value) {
 async function minusBonus(openId, value) {
     await minusBonusDb(openId, value)
 }
+
+
+async function getBonus(openId) {
+    let findRes = await findUserDb(openId);
+    if (!findRes) return 0;
+    let bonus = findRes.dataValues.bonus_points;
+    return bonus;
+}
 module.exports = {
     generateLotto,
     checkBonus,
     addBonus,
-    minusBonus
+    minusBonus,
+    getBonus
 }

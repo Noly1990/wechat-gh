@@ -58,7 +58,7 @@ var initPage = function (nickname, headimgurl) {
           <div class="main-bg"></div>
           <div class="bg-p"></div>
           <div class="content">
-              <div class="lottery_ticket">今日免费抽奖次数： {{ lottery_ticket}}</div>
+              <div class="lottery_ticket"> 您当前的积分是： {{ lottery_ticket}}</div>
           </div>
           <div class="tip">
               <div class="tip-title">活动规则</div>
@@ -90,44 +90,44 @@ var initPage = function (nickname, headimgurl) {
       lottery_ticket: 0, //抽奖次数
       prize_list: [{
           icon: "https://xygame.xiyoucc.com/images/luckwheel/bean_500.png", // 奖品图片
-          count: 10, // 奖品数量
-          name: "兰花10", // 奖品名称
+          count: 38, // 奖品数量
+          name: "兰花", // 奖品名称
           isPrize: 1 // 该奖项是否为奖品
         },
         {
           icon: "https://xygame.xiyoucc.com/images/luckwheel/bean_five.png",
-          count: 5,
-          name: "兰花5",
+          count: 18,
+          name: "兰花",
           isPrize: 1
         },
         {
           icon: "https://xygame.xiyoucc.com/images/luckwheel/bean_one.png",
-          count: 3,
-          name: "兰花3",
+          count: 8,
+          name: "兰花",
           isPrize: 1
         },
         {
           icon: "https://xygame.xiyoucc.com/images/luckwheel/bean_one.png",
           count: 1,
-          name: "兰花1",
+          name: "兰花",
           isPrize: 1
         },
         {
           icon: "https://xygame.xiyoucc.com/images/luckwheel/point_ten.png",
-          count: 30,
-          name: "30积分",
-          isPrize: 1
-        },
-        {
-          icon: "https://xygame.xiyoucc.com/images/luckwheel/point_five.png",
           count: 20,
-          name: "20积分",
+          name: "积分",
           isPrize: 1
         },
         {
           icon: "https://xygame.xiyoucc.com/images/luckwheel/point_five.png",
           count: 10,
-          name: "10积分",
+          name: "积分",
+          isPrize: 1
+        },
+        {
+          icon: "https://xygame.xiyoucc.com/images/luckwheel/point_five.png",
+          count: 5,
+          name: "积分",
           isPrize: 1
         },
         {
@@ -150,9 +150,7 @@ var initPage = function (nickname, headimgurl) {
     },
     computed: {
       toast_title() {
-        return this.hasPrize ?
-          "恭喜您，获得" + this.prize_list[this.i].count + ' ' + this.prize_list[this.i].name :
-          "未中奖";
+        return this.hasPrize ? "恭喜您，获得" + this.prize_list[this.i].count + ' ' + this.prize_list[this.i].name : "未中奖";
       },
       toast_pictrue() {
         return this.hasPrize ?
@@ -165,7 +163,9 @@ var initPage = function (nickname, headimgurl) {
     },
     beforeMount: async function () {
       console.log("before mount");
-
+      let getBonusRes=await axios.get('/getUserBonus').catch(err=>{console.err(err)})
+      let user_bonus=getBonusRes.data.bonus;
+      this.lottery_ticket=user_bonus;
     },
     methods: {
 
@@ -178,6 +178,7 @@ var initPage = function (nickname, headimgurl) {
         if (lottoRes.data.code>0) {
           this.i=lottoRes.data.lotto_result;
           this.rotating(lottoRes.data.lotto_result);
+          this.lottery_ticket=lottoRes.data.recent_bonus;
         }else {
           alert('积分不够')
         }

@@ -7,7 +7,7 @@ drop event if exists resetAttend;
 
 create event resetAttend
 
-on schedule every 1 day starts timestamp '2014-07-30 10:00:00'
+on schedule every 1 day starts timestamp '2014-07-30 00:00:01'
 
 do update users set daily_attendance=1 where daily_attendance=0; 
 

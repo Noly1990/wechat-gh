@@ -73,7 +73,7 @@ async function checkUserIdByOpenId(openId) {
     await axiosWithAuth.checkToken();
 
     let aimUrl = '/exchangeUserID';
-    let checkRes = await axios.post(aimUrl, {
+    let checkRes = await axiosWithAuth.axios.post(aimUrl, {
         unionid: unionId
     }).catch(err => {
         console.error("checkUserIdByOpenId error\n",err)
@@ -81,7 +81,7 @@ async function checkUserIdByOpenId(openId) {
     if (!checkRes) return false;
     if (checkRes.data.code==-2) {
         await axiosWithAuth.refreshToken()
-        checkRes = await axios.post(aimUrl, {
+        checkRes = await axiosWithAuth.axios.post(aimUrl, {
             unionid: unionId
         }).catch(err => {
             console.error("checkUserIdByOpenId error\n",err)
