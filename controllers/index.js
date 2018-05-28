@@ -102,7 +102,7 @@ async function postCode(ctx, next) {
             //如果是已经登陆过的,执行已登陆流程
 
             let checkExisted = await checkIfExistedRemote(openId)
-            console.log('----------game-id-------',checkExisted.data)
+            console.log('----------game-id-------', checkExisted.data)
             if (checkExisted.data.code > 0) {
                 await addUserIdToUserDb(openId, checkExisted.data.userid)
             }
@@ -341,6 +341,61 @@ async function getOrders(ctx, next) {
     }
 
 }
+const {
+    generateLotto,
+    addBonus,
+    checkBonus,
+    minusBonus,
+    getBonus
+} = require('../services/luckwheel')
+
+async function lottoWheel(ctx, next) {
+    let cryptoId = ctx.cookies.get('cryptoId');
+    let openId = aesDecrypt(cryptoId);
+
+    let checkUserIdRes = await checkUserIdByOpenId(openId);
+
+    if (!checkUserIdRes) {
+        ctx.body = {
+            code: -2,
+            message: 'user never login game'
+        }
+    } else {
+        if (await checkBonus(openId)) {
+            await minusBonus(openId, 10)
+            let lotto_result = await generateLotto(openId);
+            let recent_bonus = await getBonus(openId);
+            ctx.body = {
+                code: 1,
+                lotto_result,
+                recent_bonus
+            }
+        } else {
+            ctx.body = {
+                code: -1,
+                message: "积分不够"
+            }
+        }
+    }
+}
+
+async function getUserBonus(ctx, next) {
+    let cryptoId = ctx.cookies.get('cryptoId');
+    if (cryptoId) {
+        let openId = aesDecrypt(cryptoId);
+        let bonus = await getBonus(openId);
+        ctx.body = {
+            code: 1,
+            bonus
+        }
+    } else {
+        ctx.body = {
+            code: -1,
+            message: "no cryptoId"
+        }
+    }
+}
+
 
 
 module.exports = {
@@ -350,5 +405,7 @@ module.exports = {
     getSig,
     getUserStatus,
     requestPayment,
-    getOrders
+    getOrders,
+    lottoWheel,
+    getUserBonus
 }

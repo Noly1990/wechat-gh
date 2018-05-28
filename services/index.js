@@ -90,10 +90,33 @@ async function checkUserIdByOpenId(openId) {
     return checkRes.data.code > 0 ? true : false;
 }
 
+async function addPropertyToRemote(){
+    //openid转化成unionid，并去游戏服务器请求该用户是否登陆过
+    let unionId=await exchangeOpenToUnion(openId);
+
+    await axiosWithAuth.checkToken();
+
+    let aimUrl = '/exchangeUserID';
+    let checkRes = await axiosWithAuth.axios.post(aimUrl, {
+        unionid: unionId
+    }).catch(err => {
+        console.error("checkUserIdByOpenId error\n",err)
+    });
+    if (!checkRes) return false;
+    if (checkRes.data.code==-2) {
+        await axiosWithAuth.refreshToken()
+        checkRes = await axiosWithAuth.axios.post(aimUrl, {
+            unionid: unionId
+        }).catch(err => {
+            console.error("checkUserIdByOpenId error\n",err)
+        });
+    }
+    return checkRes.data.code > 0 ? true : false;
+}
+
 
 async function checkUserIdRemote(userId) {
 
-    
     //检测userid是否存在，并去游戏服务器请求,默认return true
     await axiosWithAuth.checkToken();
 

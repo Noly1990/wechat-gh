@@ -22,7 +22,7 @@ router.post('/getSig', indexControl.getSig)
 
 const {
   aesDecrypt,
-  aesEncrypt
+  //aesEncrypt
 } = require('../crypto')
 
 const {
@@ -125,52 +125,11 @@ router.get('/luckwheel', async (ctx, next) => {
   })
 })
 
-const {
-  generateLotto,
-  addBonus,
-  checkBonus,
-  minusBonus,
-  getBonus
-} = require('../services/luckwheel')
 
-router.get('/lottowheel', async (ctx, next) => {
-  let cryptoId = ctx.cookies.get('cryptoId');
-  let openId = aesDecrypt(cryptoId);
 
-  if (await checkBonus(openId)) {
-    await minusBonus(openId,10)
-    let lotto_result =await generateLotto(openId);
-    let recent_bonus =await getBonus(openId);
-    ctx.body = {
-      code: 1,
-      lotto_result,
-      recent_bonus
-    }
-  }else {
-    ctx.body = {
-      code: -1,
-      message:"积分不够"
-    }
-  }
-})
+router.get('/lottowheel', indexControl.lottoWheel)
 
-router.get('/getUserBonus',async ( ctx , next )=>{
-  let cryptoId = ctx.cookies.get('cryptoId');
-  if (cryptoId) {
-    let openId = aesDecrypt(cryptoId);
-    let bonus=await getBonus(openId);
-    ctx.body={
-      code:1,
-      bonus
-    }
-
-} else {
-    ctx.body = {
-        code: -1,
-        message: "no cryptoId"
-    }
-}
-})
+router.get('/getUserBonus',indexControl.getUserBonus)
 
 
 const {

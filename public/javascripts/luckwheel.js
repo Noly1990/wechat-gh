@@ -63,7 +63,7 @@ var initPage = function (nickname, headimgurl) {
           <div class="tip">
               <div class="tip-title">活动规则</div>
               <div class="tip-content">
-                  <p> 1.每日签到获得10积分，通过签到和其他活动获得积分,每次抽奖消耗20积分</p>
+                  <p> 1.每日签到获得10积分，通过签到和其他活动获得积分,每次抽奖消耗10积分</p>
                   <p> 2.转盘抽奖取得的奖品会在一定时间内到账，抽奖获得的房卡只能对自己的账户生效</p>
                   <p> 3.本公司保留抽奖的解释权，如有作弊，一律清零</p>
               </div>
@@ -88,6 +88,7 @@ var initPage = function (nickname, headimgurl) {
       headimgurl,
       easejoy_bean: 0, //金豆
       lottery_ticket: 0, //抽奖次数
+      recent_bonus:0,
       prize_list: [{
           icon: "https://xygame.xiyoucc.com/images/luckwheel/bean_500.png", // 奖品图片
           count: 38, // 奖品数量
@@ -178,9 +179,13 @@ var initPage = function (nickname, headimgurl) {
         if (lottoRes.data.code>0) {
           this.i=lottoRes.data.lotto_result;
           this.rotating(lottoRes.data.lotto_result);
-          this.lottery_ticket=lottoRes.data.recent_bonus;
+          this.recent_bonus=lottoRes.data.recent_bonus;
+        }else if (parseInt(lottoRes.data.code)===-1) {
+          alert('您的积分不够')
+        }else if (parseInt(lottoRes.data.code)===-2) {
+          alert('您还未登陆过游戏')
         }else {
-          alert('积分不够')
+          alert('未知错误')
         }
       },
       rotating(index) {
@@ -208,7 +213,7 @@ var initPage = function (nickname, headimgurl) {
           setTimeout(function () {
             this.click_flag = true;
             this.game_over(result_index);
-            
+            this.lottery_ticket=this.recent_bonus;
           }.bind(this), during_time * 1000 + 1500); // 延时，保证转盘转完
         } else {
           //
