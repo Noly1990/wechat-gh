@@ -56,7 +56,7 @@ var initPage = function (nickname, headimgurl) {
             </div>
             <div class="mint-radiolist">
                 <mt-radio
-                    title="充值数额（兰花￥2/个）"
+                    title="充值数额（房卡￥2/个）"
                     v-model="radio2Value"
                     :options="radio2Options">
                 </mt-radio>
@@ -83,17 +83,17 @@ var initPage = function (nickname, headimgurl) {
       ],
       radioValue: "self",
       radio2Options: [{
-          label: "40*兰花（20送20）",
+          label: "40*房卡（20送20）",
           value: "ghtype1",
           price: 40
         },
         {
-          label: "80*兰花（40送40）",
+          label: "80*房卡（40送40）",
           value: "ghtype2",
           price: 80
         },
         {
-          label: "160*兰花（80送80）",
+          label: "160*房卡（80送80）",
           value: "ghtype3",
           price: 160
         }

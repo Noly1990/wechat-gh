@@ -241,7 +241,7 @@ async function requestPayment(ctx, next) {
             //生成订单号，并通过订单号
             let tradeNo = generateTradeNo();
 
-            let tradebody = '嘻游娱乐-兰花充值';
+            let tradebody = '嘻游娱乐-房卡充值';
 
             let total_fee = payInfo.totalPrice / 10;
 

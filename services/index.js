@@ -68,7 +68,7 @@ axiosWithAuth.refreshToken();
 async function checkUserIdByOpenId(openId) {
 
     //openid转化成unionid，并去游戏服务器请求该用户是否登陆过
-    let unionId=await exchangeOpenToUnion(openId);
+    let unionId = await exchangeOpenToUnion(openId);
 
     await axiosWithAuth.checkToken();
 
@@ -76,42 +76,44 @@ async function checkUserIdByOpenId(openId) {
     let checkRes = await axiosWithAuth.axios.post(aimUrl, {
         unionid: unionId
     }).catch(err => {
-        console.error("checkUserIdByOpenId error\n",err)
+        console.error("checkUserIdByOpenId error\n", err)
     });
     if (!checkRes) return false;
-    if (checkRes.data.code==-2) {
+    if (checkRes.data.code == -2) {
         await axiosWithAuth.refreshToken()
         checkRes = await axiosWithAuth.axios.post(aimUrl, {
             unionid: unionId
         }).catch(err => {
-            console.error("checkUserIdByOpenId error\n",err)
+            console.error("checkUserIdByOpenId error\n", err)
         });
     }
     return checkRes.data.code > 0 ? true : false;
 }
 
-async function addPropertyToRemote(){
+async function addPropertyToRemote(openid, value, activityName) {
     //openid转化成unionid，并去游戏服务器请求该用户是否登陆过
-    let unionId=await exchangeOpenToUnion(openId);
+    let unionId = await exchangeOpenToUnion(openId);
 
     await axiosWithAuth.checkToken();
 
-    let aimUrl = '/exchangeUserID';
-    let checkRes = await axiosWithAuth.axios.post(aimUrl, {
-        unionid: unionId
+    let aimUrl = '/addPropertyFromGH';
+    let addRes = await axiosWithAuth.axios.post(aimUrl, {
+        unionid: unionId,
+        addition: value,
+        activityName
     }).catch(err => {
-        console.error("checkUserIdByOpenId error\n",err)
+        console.error("addPropertyToRemote error\n", err)
     });
-    if (!checkRes) return false;
-    if (checkRes.data.code==-2) {
+    if (!addRes) return false;
+    if (addRes.data.code == -2) {
         await axiosWithAuth.refreshToken()
-        checkRes = await axiosWithAuth.axios.post(aimUrl, {
+        addRes = await axiosWithAuth.axios.post(aimUrl, {
             unionid: unionId
         }).catch(err => {
-            console.error("checkUserIdByOpenId error\n",err)
+            console.error("addPropertyToRemote error\n", err)
         });
     }
-    return checkRes.data.code > 0 ? true : false;
+    return addRes.data.code > 0 ? true : false;
 }
 
 
@@ -122,12 +124,12 @@ async function checkUserIdRemote(userId) {
 
     let aimUrl = `/checkUserID?userid=${userId}`;
     let checkRes = await axiosWithAuth.axios.get(aimUrl).catch(err => {
-        console.error("checkUserIdRemote error",err)
+        console.error("checkUserIdRemote error", err)
     });
-    if (checkRes.data.code==-2) {
+    if (checkRes.data.code == -2) {
         await axiosWithAuth.refreshToken()
         checkRes = await axiosWithAuth.axios.get(aimUrl).catch(err => {
-            console.error("checkUserIdRemote error",err)
+            console.error("checkUserIdRemote error", err)
         });
     }
     if (!checkRes) return false;
@@ -135,19 +137,19 @@ async function checkUserIdRemote(userId) {
 
 }
 
-async function checkIfExistedRemote(openId){
+async function checkIfExistedRemote(openId) {
 
-    let unionId=await exchangeOpenToUnion(openId);
+    let unionId = await exchangeOpenToUnion(openId);
     await axiosWithAuth.checkToken();
 
-    let checkExistedRes=await axiosWithAuth.axios.post(`/exchangeUserID`, {
+    let checkExistedRes = await axiosWithAuth.axios.post(`/exchangeUserID`, {
         unionid: unionId
     }).catch(err => {
         console.error("checkIfExistedRemote() error", err)
     })
     if (checkExistedRes.data.code == -2) {
         await axiosWithAuth.refreshToken()
-        checkExistedRes=await axiosWithAuth.axios.post(`/exchangeUserID`, {
+        checkExistedRes = await axiosWithAuth.axios.post(`/exchangeUserID`, {
             unionid: unionId
         }).catch(err => {
             console.error("checkIfExistedRemote() error", err)
@@ -265,7 +267,7 @@ async function checkPayment(transaction_id) {
             reject(err)
         })
     })
-    
+
     return checkRes;
 }
 
@@ -287,7 +289,7 @@ async function checkAndGetToken() {
             axios.get(aimUrl).then(res => {
                 resolve(res)
             }).catch(err => {
-                console.error("checkAndGetToken",err)
+                console.error("checkAndGetToken", err)
                 reject(err)
             })
         })
@@ -307,7 +309,7 @@ async function checkAndGetTicket(token) {
             axios.get(aimUrl).then(res => {
                 resolve(res)
             }).catch(err => {
-                console.log("checkAndGetTicket error",err)
+                console.log("checkAndGetTicket error", err)
                 reject(err)
             })
         })
@@ -387,7 +389,7 @@ async function exchangeOpenToUnion(openId) {
     let findRes = await findUserDb(openId);
     if (findRes) {
         return findRes.dataValues.unionid
-    }else {
+    } else {
         return null;
     }
 }
@@ -411,5 +413,6 @@ module.exports = {
     checkUserIdRemote,
     exchangeOpenToUnion,
     getWechatOrders,
-    checkIfExistedRemote
+    checkIfExistedRemote,
+    addPropertyToRemote
 }
