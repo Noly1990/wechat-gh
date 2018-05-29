@@ -121,7 +121,7 @@ async function checkUserIdRemote(userId) {
 
     //检测userid是否存在，并去游戏服务器请求,默认return true
     await axiosWithAuth.checkToken();
-
+    
     let aimUrl = `/checkUserID?userid=${userId}`;
     let checkRes = await axiosWithAuth.axios.get(aimUrl).catch(err => {
         console.error("checkUserIdRemote error", err)

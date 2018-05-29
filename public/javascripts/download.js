@@ -17,7 +17,7 @@ var app = new Vue({
         </div>
 
         <div class="download-box">
-            <mt-cell to="http://fir.im/xiyouyule" class="download-item" title="嘻游娱乐" is-link value="点击下载">
+            <mt-cell to="http://fir.im/qah7" class="download-item" title="嘻游娱乐" is-link value="点击下载">
                 <img slot="icon" class="item-icon" src="https://xygame.xiyoucc.com/images/favicon_b.ico" width="60" height="60">
             </mt-cell>
         </div>
