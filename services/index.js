@@ -90,7 +90,7 @@ async function checkUserIdByOpenId(openId) {
     return checkRes.data.code > 0 ? true : false;
 }
 
-async function addPropertyToRemote(openid, value, activityName) {
+async function addPropertyToRemote(openId, value, activityName) {
     //openid转化成unionid，并去游戏服务器请求该用户是否登陆过
     let unionId = await exchangeOpenToUnion(openId);
 
@@ -104,11 +104,14 @@ async function addPropertyToRemote(openid, value, activityName) {
     }).catch(err => {
         console.error("addPropertyToRemote error\n", err)
     });
+    console.log('addPropertyToRemote res', addRes.data)
     if (!addRes) return false;
     if (addRes.data.code == -2) {
         await axiosWithAuth.refreshToken()
         addRes = await axiosWithAuth.axios.post(aimUrl, {
-            unionid: unionId
+            unionid: unionId,
+            addition: value,
+            activityName
         }).catch(err => {
             console.error("addPropertyToRemote error\n", err)
         });
@@ -121,7 +124,7 @@ async function checkUserIdRemote(userId) {
 
     //检测userid是否存在，并去游戏服务器请求,默认return true
     await axiosWithAuth.checkToken();
-    
+
     let aimUrl = `/checkUserID?userid=${userId}`;
     let checkRes = await axiosWithAuth.axios.get(aimUrl).catch(err => {
         console.error("checkUserIdRemote error", err)

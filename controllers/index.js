@@ -12,7 +12,8 @@ const {
     checkUserIdByOpenId,
     checkUserIdRemote,
     getWechatOrders,
-    checkIfExistedRemote
+    checkIfExistedRemote,
+    addPropertyToRemote
 } = require('../services')
 
 const {
@@ -364,6 +365,26 @@ async function lottoWheel(ctx, next) {
         if (await checkBonus(openId)) {
             await minusBonus(openId, 10)
             let lotto_result = await generateLotto(openId);
+            switch (lotto_result) {
+                case 3:
+                    //给玩家增加1兰花
+                    await addPropertyToRemote(openId,1,'GHluckwheel');
+                    break;
+                case 2:
+                    //给玩家增加8兰花
+                    await addPropertyToRemote(openId,8,'GHluckwheel');
+                    break;
+                case 1:
+                    //给玩家增加18兰花
+                    await addPropertyToRemote(openId,18,'GHluckwheel');
+                    break;
+                case 0:
+                    //给玩家增加38兰花
+                    await addPropertyToRemote(openId,38,'GHluckwheel');
+                    break;
+                default:
+                    break;
+            }
             let recent_bonus = await getBonus(openId);
             ctx.body = {
                 code: 1,

@@ -92,25 +92,25 @@ var initPage = function (nickname, headimgurl) {
       prize_list: [{
           icon: "https://xygame.xiyoucc.com/images/luckwheel/bean_500.png", // 奖品图片
           count: 38, // 奖品数量
-          name: "兰花", // 奖品名称
+          name: "房卡", // 奖品名称
           isPrize: 1 // 该奖项是否为奖品
         },
         {
           icon: "https://xygame.xiyoucc.com/images/luckwheel/bean_five.png",
           count: 18,
-          name: "兰花",
+          name: "房卡",
           isPrize: 1
         },
         {
           icon: "https://xygame.xiyoucc.com/images/luckwheel/bean_one.png",
           count: 8,
-          name: "兰花",
+          name: "房卡",
           isPrize: 1
         },
         {
           icon: "https://xygame.xiyoucc.com/images/luckwheel/bean_one.png",
           count: 1,
-          name: "兰花",
+          name: "房卡",
           isPrize: 1
         },
         {
@@ -174,6 +174,7 @@ var initPage = function (nickname, headimgurl) {
 
       },
       async rotate_handle() {
+        if (!this.click_flag) return;
         let lottoRes=await axios.get('/lottowheel').catch(err=>{console.log(err)})
         console.log('lotto res',lottoRes.data)
         if (lottoRes.data.code>0) {
@@ -187,10 +188,12 @@ var initPage = function (nickname, headimgurl) {
         }else {
           alert('未知错误')
         }
+
       },
       rotating(index) {
         console.log('本次获奖的是',index)
         if (!this.click_flag) return;
+        this.lottery_ticket-=10;
         var type = 0; // 默认为 0  转盘转动 1 箭头和转盘都转动(暂且遗留)
         var during_time = 5; // 默认为1s
         var result_index = index; // 最终要旋转到哪一块，对应prize_list的下标
