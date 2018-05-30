@@ -13,7 +13,8 @@ const {
     checkUserIdRemote,
     getWechatOrders,
     checkIfExistedRemote,
-    addPropertyToRemote
+    addPropertyToRemote,
+    createH5UnifiedOrder
 } = require('../services')
 
 const {
@@ -38,7 +39,8 @@ const {
 } = require('../utils/xmlTools')
 
 const {
-    generateTradeNo
+    generateTradeNo,
+    generateH5TradeNo
 } = require('../utils/tradeTools')
 
 async function pureGet(ctx, next) {
@@ -220,6 +222,42 @@ async function getSig(ctx, next) {
 }
 
 
+async function requestH5Payment(ctx, next) {
+
+    let payInfo = ctx.request.body;
+
+    let userIp = ctx.req.connection.remoteAddress.substr(7);
+
+    //客户端IP签名验证
+    let reg = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/ig;
+    if (!reg.test(userIp)) {
+        userIp = '115.211.127.161'
+    }
+
+    //生成订单号，并通过订单号
+    let tradeNo = generateH5TradeNo();
+
+    let tradebody = '嘻游娱乐-房卡充值';
+
+    let total_fee = 1;
+
+    //attach要带上userid unionid 和goodtype,现改为userid,userid要么是数字要么是self
+
+    //做openid到unionid的转换,默认有openid就有unionid
+    let attach = `h5支付测试`
+
+    let infoRes = await createH5UnifiedOrder(tradeNo, total_fee, tradebody, userIp, attach);
+
+    ctx.body = {
+        code: 1,
+        message: 'generateH5UnifiedOrder success',
+        infoRes
+    }
+
+
+
+}
+
 async function requestPayment(ctx, next) {
 
     let cryptoId = ctx.cookies.get('cryptoId');
@@ -368,19 +406,19 @@ async function lottoWheel(ctx, next) {
             switch (lotto_result) {
                 case 3:
                     //给玩家增加1兰花
-                    await addPropertyToRemote(openId,1,'GHluckwheel');
+                    await addPropertyToRemote(openId, 1, 'GHluckwheel');
                     break;
                 case 2:
                     //给玩家增加8兰花
-                    await addPropertyToRemote(openId,8,'GHluckwheel');
+                    await addPropertyToRemote(openId, 8, 'GHluckwheel');
                     break;
                 case 1:
                     //给玩家增加18兰花
-                    await addPropertyToRemote(openId,18,'GHluckwheel');
+                    await addPropertyToRemote(openId, 18, 'GHluckwheel');
                     break;
                 case 0:
                     //给玩家增加38兰花
-                    await addPropertyToRemote(openId,38,'GHluckwheel');
+                    await addPropertyToRemote(openId, 38, 'GHluckwheel');
                     break;
                 default:
                     break;
@@ -428,5 +466,6 @@ module.exports = {
     requestPayment,
     getOrders,
     lottoWheel,
-    getUserBonus
+    getUserBonus,
+    requestH5Payment
 }

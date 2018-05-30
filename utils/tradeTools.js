@@ -1,5 +1,10 @@
 function generateTradeNo() {
-    let tradeNumber = 'XiYouGH' + createTimeString();
+    let tradeNumber = 'XiYouGH-' + createTimeString();
+    return tradeNumber;
+}
+
+function generateH5TradeNo() {
+    let tradeNumber = 'XiYouH5-' + createTimeString();
     return tradeNumber;
 }
 
@@ -13,5 +18,6 @@ function createTimeString() {
 
 
 module.exports={
-    generateTradeNo
+    generateTradeNo,
+    generateH5TradeNo
 }

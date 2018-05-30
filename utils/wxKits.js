@@ -99,26 +99,17 @@ function checkWX(signature, timestamp, nonce) {
 }
 
 
-// class WXKits {
-//     constructor(options) {
-//         let { appid, mchid, mchKey, token } = options
-//         this.appid = options.appid;
-//         this.mchid = options.mchid;
-//         this.mchKey = options.mchKey;
-//     }
-// }
+function signH5Order(tradeNum, total_fee, body, userIp, attach,notify_url) {
+    let nonce_str = createNonceStr();
+    let stringA = `appid=${appid}&attach=${attach}&body=${body}&device_info=WEB&mch_id=${mchid}&nonce_str=${nonce_str}&notify_url=${notify_url}&out_trade_no=${tradeNum}&sign_type=MD5&spbill_create_ip=${userIp}&total_fee=${total_fee}&trade_type=MWEB`
+    let stringSignTemp = stringA + `&key=${mchKey}`;
+    let sign = signMD5(stringSignTemp).toUpperCase();
+    return {
+        sign,
+        nonce_str
+    }
+}
 
-// function initKits(options) {
-//     let { appid, mchid, mchKey, token } = options
-//     return {
-//         appid,
-//         mchid,
-//         mchKey,
-//         token,
-//         signOrder,
-//         signWXPay
-//     }
-// }
 
 exports.checkWX = checkWX;
 exports.signTicket = signTicket;
@@ -128,5 +119,6 @@ module.exports = {
     signWXPay,
     signTicket,
     checkWX,
-    signCheckPay
+    signCheckPay,
+    signH5Order
 }

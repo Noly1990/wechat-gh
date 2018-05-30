@@ -96,6 +96,12 @@ router.get('/pay', async (ctx, next) => {
 })
 
 
+router.get('/h5pay', async (ctx, next) => {
+  await ctx.render('h5pay', {
+    title: "嘻游游戏H5充值"
+  })
+})
+
 router.get('/download', async (ctx, next) => {
   await ctx.render('download', {
     title: "嘻游游戏下载"
@@ -135,6 +141,30 @@ router.get('/getUserBonus',indexControl.getUserBonus)
 const {
   setButtons
 } = require('../utils/setGHbuttons')
+
+
+router.post('/requestH5Payment',indexControl.requestH5Payment)
+
+
+
+
+//   "wxPaySignInfo": {
+//       "return_code": "SUCCESS",
+//       "return_msg": "OK",
+//       "appid": "wx813ae47a30848bde",
+//       "mch_id": "1502135671",
+//       "device_info": "WEB",
+//       "nonce_str": "cn8AYJKNqAuUucRL",
+//       "sign": "C28099E686CCEA47CA876BFE1A74C82D",
+//       "result_code": "SUCCESS",
+//       "prepay_id": "wx30200038470269efa247dc9f3710542484",
+//       "trade_type": "MWEB",
+//       "mweb_url": "https://wx.tenpay.com/cgi-bin/mmpayweb-bin/checkmweb?prepay_id=wx30200038470269efa247dc9f3710542484&package=111539218"
+//   }
+
+
+
+
 
 router.get('/setGHbuttons', async (ctx, next) => {
   if (ctx.query.adminSecret === void 0) {

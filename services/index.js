@@ -18,7 +18,8 @@ const {
     signOrder,
     signTicket,
     signWXPay,
-    signCheckPay
+    signCheckPay,
+    signH5Order
 } = require('../utils/wxKits')
 const {
     findUserDb
@@ -232,8 +233,47 @@ async function createUnifiedOrder(openid, tradeNum, total_fee, body, userIp, att
         })
     })
     return orderRes;
-
 }
+
+//h5页面的统一下单api
+async function createH5UnifiedOrder(tradeNum, total_fee, body, userIp, attach) {
+    let aimUrl = `https://api.mch.weixin.qq.com/pay/unifiedorder`;
+    let notify_url = serverBridge + '/payInfoReceiver';
+    let {
+        sign,
+        nonce_str
+    } = signH5Order( tradeNum, total_fee, body, userIp, attach, notify_url);
+
+    let requsetJson = {
+        appid,
+        attach,
+        mch_id: mchid,
+        device_info: 'WEB',
+        nonce_str,
+        sign,
+        sign_type: 'MD5',
+        body,
+        out_trade_no: tradeNum,
+        total_fee,
+        notify_url,
+        spbill_create_ip: userIp,
+        trade_type: 'MWEB'
+    }
+
+    let requestXML = json2xml(requsetJson);
+
+    let orderRes = await new Promise(function (resolve, reject) {
+        axios.post(aimUrl, requestXML).then(async res => {
+            let json = await xml2json(res.data)
+            resolve(json);
+        }).catch(err => {
+            console.error('createUnifiedOrder err', err)
+            reject(err)
+        })
+    })
+    return orderRes;
+}
+
 
 //统一下单后的生成pay信息的api
 async function createPayment(openid, tradeNum, total_fee, body, userIp, attach) {
@@ -417,5 +457,6 @@ module.exports = {
     exchangeOpenToUnion,
     getWechatOrders,
     checkIfExistedRemote,
-    addPropertyToRemote
+    addPropertyToRemote,
+    createH5UnifiedOrder
 }
