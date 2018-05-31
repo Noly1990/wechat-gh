@@ -226,6 +226,8 @@ async function requestH5Payment(ctx, next) {
 
     let payInfo = ctx.request.body;
 
+    if (!payInfo.goodType||!payInfo.totalPrice) return ;
+
     let userIp = ctx.req.connection.remoteAddress.substr(7);
 
     //客户端IP签名验证
@@ -239,12 +241,12 @@ async function requestH5Payment(ctx, next) {
 
     let tradebody = '嘻游娱乐-房卡充值';
 
-    let total_fee = 1;
+    let total_fee = payInfo.totalPrice;
 
     //attach要带上userid unionid 和goodtype,现改为userid,userid要么是数字要么是self
 
     //做openid到unionid的转换,默认有openid就有unionid
-    let attach = `h5支付测试`
+    let attach = `goodtype=${payInfo.goodType}`
 
     let infoRes = await createH5UnifiedOrder(tradeNo, total_fee, tradebody, userIp, attach);
 
