@@ -1,0 +1,16 @@
+extends layout
+
+block append head
+  script(src="https://unpkg.com/axios/dist/axios.min.js")
+  link(rel="stylesheet", href="/stylesheets/h5pay.css")
+  link(rel="stylesheet", href="https://unpkg.com/mint-ui/lib/style.css")
+  script(src="https://cdn.jsdelivr.net/npm/vue")
+  script(src="https://unpkg.com/mint-ui/lib/index.js")
+  
+
+block content
+  div(id="app") 页面加载中......
+  //- button(onclick='chooseImg()') 选择图片
+  script(src="/javascripts/h5pay.js")
+  script.
+    console.log('这是h5支付页面')
