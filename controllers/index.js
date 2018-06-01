@@ -458,6 +458,26 @@ async function getUserBonus(ctx, next) {
 }
 
 
+async function getUnionByOpen(ctx,next) {
+    let json=ctx.request.body;
+    if(!json.openid) return ;
+    let openId=json.openid;
+    let unionid = await exchangeOpenToUnion(openId);
+    if (unionid) {
+        ctx.body={
+            code:1,
+            unionid,
+            message:'get unionid success'
+        }
+    }else {
+        ctx.body={
+            code:-1,
+            message:"no such openid"
+        }
+    }
+
+}
+
 
 module.exports = {
     pureGet,
@@ -469,5 +489,6 @@ module.exports = {
     getOrders,
     lottoWheel,
     getUserBonus,
-    requestH5Payment
+    requestH5Payment,
+    getUnionByOpen
 }
