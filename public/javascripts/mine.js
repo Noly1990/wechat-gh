@@ -31,42 +31,43 @@ var initPage = function (nickname, headimgurl, city, sex, bonus_points, userid) 
     el: '#app',
     template: `
       <div>
-        <div class="user-info">
-          <img class="user-head" :src="headimgurl" alt="用户头像">
-          
-          <div class="user-id">
-            <div class="user-name">{{nickname}}</div>
-          </div>
-
-          <div class="info-box">
-            <div class="info-item">
-              <div class="item-label">游戏ID</div>
-              <div class="item-content">{{userid?userid:'未登陆过游戏'}}</div>
-            </div>
-            <div class="info-item">
-              <div class="item-label">用户积分</div>
-              <div class="item-content">{{bonus_points}}</div>
-            </div>
+      <van-card class="user-info" :title="nickname" :thumb="headimgurl">
+        <div slot="desc">
+          <div class="user-gameid">{{gameIdText}}</div>
         </div>
-        
-        <div class="toggle-btn" @click="toggleList"><span class="btn-text">历史订单</span></div>
-            <transition name="fade">
-              <div v-if="listShow" class="payed-list">
-                <div v-for="item in ordersList" class="list-item">
-                    <div class="order-id">订单号：{{item.OrderID}}</div>
-                    <div class="order-type">
-                      <div>通过{{item.TradeType}}{{item.Remark}}充值</div>
-                      <div>到账游戏ID：{{item.UserID}}</div>
-                    </div>
-                    <div class="order-fee">
-                      <div>{{item.GoodType}}</div>
-                      <div class="order-amount">金额：{{item.TotalAmount}}</div>
-                    </div>
-                    <div class="order-time">{{item.OrderTime}}</div>
+        <div slot="footer">
+          <van-button type="primary" size="small" @click="refreshUserInfo">刷新用户信息</van-button>
+        </div>
+      </van-card>
+      <van-cell-group class="bonus-cell">
+        <van-cell :value="bonus_points" icon="exchange" is-link url="http://long.lxxiyou.cn/luckwheel">
+          <template slot="title">
+            <span class="van-cell-text">用户积分</span>
+            <van-tag mark type="danger">积分抽奖</van-tag>
+          </template>
+        </van-cell>
+        <van-cell title="充值记录" icon="pending-orders" clickable is-link @click="toggleList"/>
+      </van-cell-group>
+        <transition name="fade">
+          <div v-if="listShow">
+            <div v-for="item in ordersList" class="per-item">
+              <van-card 
+                thumb="http://long.lxxiyou.cn/images/fk-item.png">
+                <div slot="title">
+                  <div class="item-title"><span style="color:black;">订单号：</span>{{item.OrderID}}</div>
                 </div>
-              </div>
-            </transition>
-        </div>
+                <div slot="desc">
+                  <div class="item-goodtype"><span style="color:black;">商品种类：</span>{{item.GoodType}}<div class="item-price">￥{{item.TotalAmount}}</div></div>
+                  <div class="item-desc">通过{{item.TradeType}}{{item.Remark}}充值<div class="item-addition">x{{item.Addition}}</div></div>
+                </div>
+                <div slot="footer">
+                  <van-button type="primary" size="mini" @click="copyOrderId">复制单号</van-button>
+                  <div class="item-order-time">{{item.OrderTime}}</div>
+                </div>
+              </van-card>
+            </div>
+          </div>
+        </transition>
       </div>
       `,
     data: {
@@ -91,10 +92,22 @@ var initPage = function (nickname, headimgurl, city, sex, bonus_points, userid) 
       })
     },
     methods: {
+      refreshUserInfo(){
+        console.log('refresh-user-info')
+      },
       toggleList() {
         console.log('toggle')
         console.log('ordersList', this.ordersList)
         this.listShow = !this.listShow;
+      },
+      copyOrderId(){
+        this.$toast('功能还在开发中，后续将开放使用...');
+      }
+    },
+    computed:{
+      gameIdText(){
+        let gameId=this.userid?this.userid:'未登陆过游戏';
+        return `游戏ID:${gameId}`
       }
     }
   })
@@ -205,6 +218,7 @@ function formatOrder(ordersList) {
     tempItem.OrderTime = `${str.substr(0,4)}-${str.substr(4,2)}-${str.substr(6,2)} ${str.substr(8,2)}:${str.substr(10,2)}`
     tempItem.OrderID = ordersList[i].OrderID;
     tempItem.GoodType = goodTypes[ordersList[i].GoodType].label;
+    tempItem.Addition = goodTypes[ordersList[i].GoodType].addition;
     //项目中期有一次,gameid和userid的转换，导致问题
     tempItem.UserID = ordersList[i].GameID;
     tempArr.unshift(tempItem)
