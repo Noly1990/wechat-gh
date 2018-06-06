@@ -242,7 +242,7 @@ async function createH5UnifiedOrder(tradeNum, total_fee, body, userIp, attach) {
     let {
         sign,
         nonce_str
-    } = signH5Order( tradeNum, total_fee, body, userIp, attach, notify_url);
+    } = signH5Order(tradeNum, total_fee, body, userIp, attach, notify_url);
 
     let requsetJson = {
         appid,
@@ -439,6 +439,78 @@ async function exchangeOpenToUnion(openId) {
 
 
 
+//公众号消息类
+
+
+//templId   xcVNioZQkRNcjnAObu2PNjKYQbhQqwtdlT06oiAIpXw
+
+
+
+// {{first.DATA}}
+
+// {{accountType.DATA}}：{{account.DATA}}
+// {{productType.DATA}}：{{number.DATA}}
+// 充值金额：{{amount.DATA}}
+// 充值状态：{{result.DATA}}
+// {{remark.DATA}
+
+// 您好，您已成功进行某游戏币充值。
+
+// 帐号：kantzou
+// 获得游戏币：500点
+// 充值金额：50元
+// 充值状态：充值成功
+// 祝您游戏愉快。openId, templateId
+
+
+
+async function sendTemplateMessageForPaySuccess() {
+    let token = await checkAndGetToken();
+    let aimUrl = `https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=${token}`;
+    let sendRes = await axios.post(aimUrl, {
+        "touser": "opnLL0dPxnYzRDU-H5koTZpKq2TU",
+        "template_id": "xcVNioZQkRNcjnAObu2PNjKYQbhQqwtdlT06oiAIpXw",
+        "url": "http://long.lxxiyou.cn/mine",
+        "data": {
+            "first": {
+                "value": "感谢您，嘻游娱乐，房卡充值成功！",
+                "color": "#173177"
+            },
+            "accountType": {
+                "value": "到账游戏ID",
+                "color": "#000000"
+            },
+            "account": {
+                "value": "182628",
+                "color": "#173177"
+            },
+            "productType": {
+                "value": "到账房卡",
+                "color": "#000000"
+            },
+            "number": {
+                "value": "14",
+                "color": "#173177"
+            },
+            "amount": {
+                "value": "20元",
+                "color": "#ff0000"
+            },
+            "result": {
+                "value": "充值成功！",
+                "color": "#173177"
+            },
+            "remark": {
+                "value": "祝您游戏愉快！",
+                "color": "#173177"
+            }
+        }
+    }).catch(err => {
+        console.log('sendTemplateMessageForPaySuccess', err);
+    })
+    return sendRes.data
+}
+
 
 
 
@@ -458,5 +530,6 @@ module.exports = {
     getWechatOrders,
     checkIfExistedRemote,
     addPropertyToRemote,
-    createH5UnifiedOrder
+    createH5UnifiedOrder,
+    sendTemplateMessageForPaySuccess
 }

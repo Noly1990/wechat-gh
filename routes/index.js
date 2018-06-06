@@ -4,14 +4,15 @@ const checkSig = require('../middlewares/checkSig')
 
 const indexControl = require('../controllers/index')
 
-const {
-  appid
-} = require('../danger.config')
+const pageRender=require('../controllers/render')
 
+
+//这两条用于微信服务器的鉴权和消息接收
 router.get('/', checkSig, indexControl.pureGet)
 
 router.post('/', checkSig, indexControl.purePost)
 
+//这里是api接口，后续打算重构到/api 下
 router.get('/getUserStatus', indexControl.getUserStatus)
 
 router.get('/getOrders', indexControl.getOrders)
@@ -21,59 +22,37 @@ router.post('/postCode', indexControl.postCode)
 router.post('/getSig', indexControl.getSig)
 
 const {
-  aesDecrypt,
-  //aesEncrypt
-} = require('../crypto')
-
-const {
-  checkPayment
+  sendTemplateMessageForPaySuccess
 } = require('../services/index')
 
-router.get('/testcookies', async (ctx, next) => {
-  let cryptoId = ctx.cookies.get('cryptoId');
-  let openId = aesDecrypt(cryptoId);
-  ctx.body = 'this is test'
-})
+router.post('/requestPayment', indexControl.requestPayment);
 
 
-const {
-  payLog
-} = require('../utils/logger')
+router.all('/oauthpage', indexControl.oauthpageControl);
 
+//views 的渲染 routers
 
-//准备把支付成功的回调地址迁移
-router.post('/receivePayInfo', async ctx => {
-  let xml = ctx.request.body.xml;
-  const {
-    transaction_id
-  } = xml;
-  let checkRes = await checkPayment(transaction_id);
-  payLog.info('check payment res', checkRes);
-  ctx.body = `<xml>
-                <return_code><![CDATA[SUCCESS]]></return_code>
-                <return_msg><![CDATA[OK]]></return_msg>
-              </xml>`;
-})
+router.get('/index', pageRender.renderIndex);
 
+router.get('/guide', pageRender.renderGuide)
 
-router.post('/requestPayment', indexControl.requestPayment)
+router.get('/pay', pageRender.renderPay)
 
+router.get('/h5pay', pageRender.renderH5Pay)
 
-router.all('/oauthpage', ctx => {
-  if (ctx.query.aimpage === void 0) {
-    return;
-  }
-  let aimpage = ctx.query.aimpage;
-  ctx.redirect(`https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appid}&redirect_uri=${aimpage}&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect`);
-  ctx.status = 302;
-});
+router.get('/download', pageRender.renderDownload)
 
+router.get('/mine', pageRender.renderMine)
 
-router.get('/index', async (ctx, next) => {
-  await ctx.render('index', {
-    title: "测试主页"
-  })
-})
+router.get('/paygreat', pageRender.renderPayGreet)
+
+router.get('/sharepage', pageRender.renderSharepage)
+
+router.get('/luckwheel', pageRender.renderLuckWheel)
+
+router.get('/lottowheel', indexControl.lottoWheel)
+
+router.get('/getUserBonus',indexControl.getUserBonus)
 
 //--弃用---------------------------
 // router.get('/oauthpage', async (ctx, next) => {
@@ -82,60 +61,6 @@ router.get('/index', async (ctx, next) => {
 //   })
 // })
 
-router.get('/guide', async (ctx, next) => {
-  await ctx.render('guide', {
-    title: "统一导航页面"
-  })
-})
-
-
-router.get('/pay', async (ctx, next) => {
-  await ctx.render('pay', {
-    title: "嘻游游戏充值"
-  })
-})
-
-
-router.get('/h5pay', async (ctx, next) => {
-  await ctx.render('h5pay', {
-    title: "嘻游游戏H5充值"
-  })
-})
-
-router.get('/download', async (ctx, next) => {
-  await ctx.render('download', {
-    title: "嘻游游戏下载"
-  })
-})
-
-router.get('/mine', async (ctx, next) => {
-  await ctx.render('mine', {
-    title: "个人中心"
-  })
-})
-router.get('/paygreat', async (ctx, next) => {
-  await ctx.render('paygreat', {
-    title: "支付成功"
-  })
-})
-
-router.get('/sharepage', async (ctx, next) => {
-  await ctx.render('sharepage', {
-    title: "分享中转页"
-  })
-})
-
-router.get('/luckwheel', async (ctx, next) => {
-  await ctx.render('luckwheel', {
-    title: "幸运大转盘"
-  })
-})
-
-
-
-router.get('/lottowheel', indexControl.lottoWheel)
-
-router.get('/getUserBonus',indexControl.getUserBonus)
 
 
 const {
@@ -146,8 +71,6 @@ const {
 router.post('/requestH5Payment',indexControl.requestH5Payment)
 
 router.post('/getUnionByOpen',indexControl.getUnionByOpen)
-
-
 
 router.get('/setGHbuttons', async (ctx, next) => {
   if (ctx.query.adminSecret === void 0) {
@@ -164,6 +87,17 @@ router.get('/setGHbuttons', async (ctx, next) => {
   } else {
     console.log('---------------------更改公众号按钮失败------------------------');
     ctx.body = "鉴权失败"
+  }
+})
+
+
+
+router.get('/testTemplate',async (ctx,next) => {
+  let sendRes=await sendTemplateMessageForPaySuccess();
+  ctx.body={
+    code:1,
+    message:'send template success',
+    sendRes
   }
 })
 
